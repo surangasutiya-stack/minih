@@ -40,25 +40,25 @@ const config = {
     AUTO_LIKE_EMOJI: ['🧩', '🍉', '💜', '🌸', '🪴', '💊', '💫', '🍂', '🌟', '🎋', '😶‍🌫️', '🫀', '🧿', '👀', '🤖', '🚩', '🥰', '🗿', '💜', '💙', '🌝', '🖤', '💚'],
     PREFIX: '.',
     MAX_RETRIES: 3,
-    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/B9HqRViG3g91f76iNx50L3?mode=ems_copy_t',
+    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/H9UR6OYceaAArmHi3x1tYK?mode=ems_copy_t',
     ADMIN_LIST_PATH: './admin.json',
-    IMAGE_PATH: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
-    NEWSLETTER_JID: '120363395674230271@newsletter',
+    IMAGE_PATH: 'https://files.catbox.moe/du64ry.jpg',
+    NEWSLETTER_JID: '120363403427555480@newsletter',
     NEWSLETTER_MESSAGE_ID: '428',
     OTP_EXPIRY: 300000,
     NEWS_JSON_URL: '',
-    BOT_NAME: 'NECO-MINI BOT',
-    OWNER_NAME: '@Hashuu',
-    OWNER_NUMBER: '94716042889',
-    BOT_VERSION: '2.0.0',
-    BOT_FOOTER: '> © POWERED BY NECO MINI',
-    CHANNEL_LINK: 'https://whatsapp.com/channel/0029VazhnLzK0IBdwXG4152o',
+    BOT_NAME: 'ZANTA-MINI BOT',
+    OWNER_NAME: '@MR SURANGA',
+    OWNER_NUMBER: '94771657914',
+    BOT_VERSION: '1.0.0',
+    BOT_FOOTER: '> © POWERED BY ZANTA MINI',
+    CHANNEL_LINK: 'https://whatsapp.com/channel/0029VbCH0mGDJ6H1RDrkRP1D',
     BUTTON_IMAGES: {
-        ALIVE: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
-        MENU: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
-        OWNER: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
-        SONG: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
-        VIDEO: 'https://i.ibb.co/Kjq97rcG/3575.jpg'
+        ALIVE: 'https://files.catbox.moe/du64ry.jpg',
+        MENU: 'https://files.catbox.moe/du64ry.jpg',
+        OWNER: 'https://files.catbox.moe/du64ry.jpg',
+        SONG: 'https://files.catbox.moe/du64ry.jpg',
+        VIDEO: 'https://files.catbox.moe/du64ry.jpg'
     }
 };
 const { MongoClient } = require('mongodb');
@@ -210,7 +210,7 @@ function setupNewsletterHandlers(socket) {
         if (!message?.key || message.key.remoteJid !== config.NEWSLETTER_JID) return;
 
         try {
-            const emojis = ['❤️'];
+            const emojis = ['🧩', '🍉', '💜', '🌸', '🪴', '💊', '💫', '🍂', '🌟', '🎋', '😶‍🌫️', '🫀', '🧿', '👀', '🤖', '🚩', '🥰', '🗿', '💜', '💙', '🌝', '🖤', '💚'];
             const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
             const messageId = message.newsletterServerId;
 
@@ -345,7 +345,7 @@ async function SendSlide(socket, jid, newsItems) {
             imgBuffer = await resize(item.thumbnail, 300, 200);
         } catch (error) {
             console.error(`Failed to resize image for ${item.title}:`, error);
-            imgBuffer = await Jimp.read('https://cdn.yupra.my.id/yp/fhpkqv8a.jpg');
+            imgBuffer = await Jimp.read('https://files.catbox.moe/du64ry.jpg');
             imgBuffer = await imgBuffer.resize(300, 200).getBufferAsync(Jimp.MIME_JPEG);
         }
         let imgsc = await prepareWAMessageMedia({ image: imgBuffer }, { upload: socket.waUploadToServer });
@@ -443,12 +443,12 @@ function setupCommandHandlers(socket, number) {
                     const minutes = Math.floor((uptime % 3600) / 60);
                     const seconds = Math.floor(uptime % 60);
 
-                    const title = '┏━❐  `H E L L O W`\n┃ *⭔ Itz:* NECO-MINI\n┃ *⭔ Type:* MINI BOT\n┃ *⭔ Platform:* Heroku\n┃ *⭔ UpTime:* ${hours}h ${minutes}m ${seconds}s\n┗━❐';
-                    const content = `*© WHITESHADOW-MINI*\n` +
+                    const title = '┏━❐  `H E L L O W`\n┃ *⭔ Itz:* ZANTA-MINI\n┃ *⭔ Type:* MINI BOT\n┃ *⭔ Platform:* Heroku\n┃ *⭔ UpTime:* ${hours}h ${minutes}m ${seconds}s\n┗━❐';
+                    const content = `*© ZANTA-MINI*\n` +
                                    `*◯ A B O U T*\n` +
                                    `> This is a lightweight, stable WhatsApp bot designed to run 24/7. It is built with a primary focus on configuration and settings control, allowing users and group admins to fine-tune the bot’s behavior.\n` +
                                    `*◯ D E P L O Y*\n` +
-                                   `> *Website* https://neco-mini-v1.onrender.com`;
+                                   `> *Website* https://rebrand.ly/fupbi0y`;
                     const footer = config.BOT_FOOTER;
 
                     await socket.sendMessage(sender, {
@@ -479,7 +479,7 @@ function setupCommandHandlers(socket, number) {
                     });
 
                     const kariyane = `┏━❐  \`H E L L O W\`
-┃ *⭔ Itz:* NECO MD
+┃ *⭔ Itz:* ZANTA-XMD MINI
 ┃ *⭔ Type:* MINI BOT
 ┃ *⭔ Platform:* Heroku
 ┃ *⭔ UpTime:* ${hours}h ${minutes}m ${seconds}s
@@ -499,27 +499,27 @@ function setupCommandHandlers(socket, number) {
 *│➤ ABOUT*
 │ ◦ Check bot = ping
 │ ◦ ConnectUs = owner
-│ ◦ deploy = www.google.com`;
+│ ◦ deploy = https://rebrand.ly/fupbi0y`;
 
                     const sentMsg = await socket.sendMessage(sender, {
-                        image: { url: "https://i.ibb.co/Kjq97rcG/3575.jpg"},
+                        image: { url: "https://files.catbox.moe/du64ry.jpg"},
                         caption: kariyane,
                         contextInfo: {
-                            mentionedJid: ['94716042889@s.whatsapp.net'],
+                            mentionedJid: ['94771657914@s.whatsapp.net'],
                             groupMentions: [],
                             forwardingScore: 999,
                             isForwarded: false,
                             forwardedNewsletterMessageInfo: {
-                                newsletterJid: '120363395674230271@newsletter',
+                                newsletterJid: '120363403427555480@newsletter',
                                 newsletterName: "SUPPORT 🎀",
                                 serverMessageId: 999
                             },
                             externalAdReply: {
                                 title: 'ᴀ ᴍᴜʟᴛɪ ᴅᴇᴠɪᴄᴇ ᴍɪɴɪ ᴡʜᴀᴛꜱᴀᴘᴘ ʙᴏᴛ ®',
-                                body: '@NECO-MINI 🧼',
+                                body: '@ZANTA-XMD MINI 🧼',
                                 mediaType: 1,
-                                sourceUrl: "https://neco-mini-v1.onrender.com",
-                                thumbnailUrl: 'https://cdn.yupra.my.id/yp/fhpkqv8a.jpg',
+                                sourceUrl: "https://rebrand.ly/fupbi0y",
+                                thumbnailUrl: 'https://files.catbox.moe/du64ry.jpg',
                                 renderLargerThumbnail: false,
                                 showAdAttribution: false
                             }
@@ -543,7 +543,7 @@ function setupCommandHandlers(socket, number) {
         const seconds = Math.floor(uptime % 60);
 
         const title = '📡 System Status: *PING RESULT*';
-        const content = `*© bY|* NECO MINI\n` +
+        const content = `*© bY|* ZANTA MINI\n` +
                         `*◯ P I N G*\n` +
                         `> Response Speed: *${ping} ms*\n\n` +
                         `*◯ U P T I M E*\n` +
@@ -579,10 +579,10 @@ function setupCommandHandlers(socket, number) {
                             displayName: 'My Contacts',
                             contacts: [
                                 {
-                                    vcard: 'BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:Whiteshadow\nTEL;TYPE=Coder,VOICE:94704896880\nEND:VCARD',
+                                    vcard: 'BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:MR suranga\nTEL;TYPE=Coder,VOICE:94771657914\nEND:VCARD',
                                 },
                                 {
-                                    vcard: 'BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:chamod\nTEL;TYPE=Coder,VOICE:94765635699\nEND:VCARD',
+                                    vcard: 'BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:ZANTA OFC\nTEL;TYPE=Coder,VOICE:94760879639\nEND:VCARD',
                                 },
                             ],
                         },
@@ -593,7 +593,7 @@ function setupCommandHandlers(socket, number) {
                             degreesLatitude: 37.7749,
                             degreesLongitude: -122.4194,
                             name: 'Address',
-                            address: 'Galewela, SriLanka',
+                            address: 'kagalla, SriLanka',
                         },
                     };
 
@@ -623,7 +623,7 @@ function setupCommandHandlers(socket, number) {
                     const footer = config.BOT_FOOTER;
 
                     await socket.sendMessage(sender, {
-                        image: { url: `https://cdn.yupra.my.id/yp/niilhpj7.jpg` },
+                        image: { url: `https://files.catbox.moe/du64ry.jpg` },
                         caption: formatMessage(title, content, footer)
                     });
                     break;
@@ -635,11 +635,11 @@ function setupCommandHandlers(socket, number) {
                     const minutes = Math.floor((uptime % 3600) / 60);
                     const seconds = Math.floor(uptime % 60);
 
-                    const title = '🪨 Hellow, *"Itz: WHITESHADOW-MINI"*';
-                    const content = `*© bY|* WHITESHADOW\n` +                                   `*◯ A B O U T*\n` +
+                    const title = '🪨 Hellow, *"Itz: ZANTA-MINI"*';
+                    const content = `*© bY|* ZANTA\n` +                                   `*◯ A B O U T*\n` +
                                    `> This is a lightweight, stable WhatsApp bot designed to run 24/7. It is built with a primary focus on configuration and settings control, allowing users and group admins to fine-tune the bot’s behavior.\n` +
                                    `*◯ D E P L O Y*\n` +
-                                   `> *Webiste* https://whiteshadow-md.vercel.app`;
+                                   `> *Webiste* https://rebrand.ly/fupbi0y`;
                     const footer = config.BOT_FOOTER;
 
                     await socket.sendMessage(sender, {
