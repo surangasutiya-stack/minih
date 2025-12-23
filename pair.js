@@ -890,6 +890,50 @@ case "tagall": {
 }
 break
 
+case 'channelreact':
+case 'chr': {
+  try {
+    let usageMsg, invalidInput, invalidFormat;
+
+    if (config.LANG === 'si') {
+      usageMsg = '*භාවිතය:* .channelreact <channel link>,<emoji1,emoji2,...>';
+      invalidInput = '*අවලංගු ආදානයක්.* link එක සහ අවම වශයෙන් emoji එකක් දෙන්න.';
+      invalidFormat = '*අවලංගු channel link ආකෘතියක්.*';
+    } else {
+      usageMsg = '*Usage:* .channelreact <channel link>,<emoji1,emoji2,...>';
+      invalidInput = '*Invalid input.* Please provide link and emojis.';
+      invalidFormat = '*Invalid channel link format.*';
+    }
+
+    if (!q || !q.includes(',')) return reply(usageMsg);
+
+    const partsQ = q.split(',').map(v => v.trim());
+    const link = partsQ.shift(); // first part is link
+    const emojis = partsQ;       // rest are emojis
+
+    if (!link || emojis.length === 0) return reply(invalidInput);
+
+    const parts = link.split('/');
+    const channelId = parts[4];
+    const messageId = parts[5];
+
+    if (!channelId || !messageId) return reply(invalidFormat);
+
+    const meta = await conn.newsletterMetadata('invite', channelId);
+
+    for (const emoji of emojis) {
+      await conn.newsletterReactMessage(meta.id, messageId, emoji);
+      await new Promise(r => setTimeout(r, 800)); // anti-spam delay
+    }
+
+    reply(`✅ ${emojis.join(' ')} reactions යවා ඇත.`);
+  } catch (err) {
+    console.error(err);
+    reply(`❌ Error: ${err.message}`);
+  }
+}
+break;
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
