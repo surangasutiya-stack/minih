@@ -1028,6 +1028,73 @@ _POWERED BY ZANTA-XMD MINI_`
     break;
 }
 
+// File top-level variable
+let tagallEmojiIndex = 0;
+const tagallEmojis = ['💙','🤎','🩶','❤️','💚','🩵','💛','🧡'];
+
+case 'tagall': {
+    try {
+        if (!isGroup) {
+            return socket.sendMessage(from, {
+                text: "❌ *මේ command එක group වලට විතරයි*"
+            });
+        }
+
+        // Pick emoji for this run
+        const emoji = tagallEmojis[tagallEmojiIndex];
+        tagallEmojiIndex = (tagallEmojiIndex + 1) % tagallEmojis.length;
+
+        // Group metadata
+        const metadata = await socket.groupMetadata(from);
+        const participants = metadata.participants;
+
+        // Group DP
+        let groupPP;
+        try {
+            groupPP = await socket.profilePictureUrl(from, 'image');
+        } catch {
+            groupPP = 'https://i.ibb.co/SB7sZ6y/group.png';
+        }
+
+        // Custom message
+        const text =
+            msg.message?.conversation ||
+            msg.message?.extendedTextMessage?.text ||
+            "";
+        const customMsg = text.split(" ").slice(1).join(" ").trim();
+
+        let mentions = [];
+        let caption =
+`📢 *TAG ALL*
+
+👥 Group: *${metadata.subject}*
+👤 Members: *${participants.length}*
+
+${customMsg ? '📝 Message:\n' + customMsg + '\n\n' : ''}`;
+
+        // Numbered mentions with emoji
+        let count = 1;
+        for (let mem of participants) {
+            mentions.push(mem.id);
+            caption += `${count}. ${emoji} @${mem.id.split("@")[0]}\n`;
+            count++;
+        }
+
+        await socket.sendMessage(from, {
+            image: { url: groupPP },
+            caption: caption.trim(),
+            mentions: mentions
+        });
+
+    } catch (err) {
+        console.error(err);
+        await socket.sendMessage(from, {
+            text: "❌ *Tagall Error*"
+        });
+    }
+    break;
+}
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
