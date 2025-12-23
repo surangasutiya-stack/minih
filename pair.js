@@ -698,60 +698,61 @@ case 'fb': {
 }
 
 case 'song1': {
-    if (!args || args.length < 2) 
-        return m.reply('Usage: .song1 <channelJID>, <song name>');
-
-    let [channelJID, songName] = args.join(' ').split(',');
-    if (!channelJID || !songName) 
-        return m.reply('Please provide both channel JID and song name');
-
-    channelJID = channelJID.trim();
-    songName = songName.trim();
-
-    const axios = require('axios');
-    const yts = require('yt-search');
-
     try {
-        // Search YouTube
-        const searchResult = await yts(songName);
-        if (!searchResult || !searchResult.videos || searchResult.videos.length === 0)
-            return m.reply('❌ No results found on YouTube');
+        if (!args || args.length < 2)
+            return m.reply('❌ Usage:\n.song1 <channelJID>, <song name>');
 
-        const video = searchResult.videos[0];
+        let text = args.join(' ');
+        if (!text.includes(','))
+            return m.reply('❌ Format error!\n.song1 <channelJID>, <song name>');
+
+        let [channelJID, songName] = text.split(',');
+        channelJID = channelJID.trim();
+        songName = songName.trim();
+
+        if (!channelJID.endsWith('@newsletter'))
+            return m.reply('❌ Invalid channel JID!\nExample: 1203xxxx@newsletter');
+
+        const axios = require('axios');
+        const yts = require('yt-search');
+
+        m.reply('🔎 Searching song...');
+
+        const search = await yts(songName);
+        if (!search.videos || search.videos.length === 0)
+            return m.reply('❌ Song not found on YouTube');
+
+        const video = search.videos[0];
         const ytLink = video.url;
-        const mp3Title = video.title;
 
-        // Fetch MP3 from Chama API
-        const fetchURL = `https://chama-yt-dl-api.vercel.app/mp3?id=https://youtube.com/watch?v=nKUbo7WGiC8}`;
-        const res = await axios.get(fetchURL);
-        if (!res.data || !res.data.link)
-            return m.reply('❌ Failed to fetch the song');
+        m.reply('⬇️ Fetching audio...');
 
-        const mp3Url = res.data.link;
-
-        // Send as voice note (PTT) to channel
-        await conn.sendMessage(channelJID, {
-            audio: { url: mp3Url },
-            mimetype: 'audio/mpeg',
-            ptt: true,
-            fileName: `${mp3Title}.mp3`,
-            contextInfo: {
-                externalAdReply: {
-                    title: mp3Title,
-                    mediaType: 2,
-                    sourceUrl: ytLink
-                }
-            },
-            caption: `🎶 ${mp3Title}`
+        const apiURL = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(ytLink)}`;
+        const res = await axios.get(apiURL, {
+            timeout: 30000,
+            headers: { 'User-Agent': 'Mozilla/5.0' }
         });
 
-        m.reply(`✅ "${mp3Title}" sent as voice note to ${channelJID}`);
-    } catch (err) {
-        console.error(err);
-        m.reply('❌ Error sending the voice note.');
+        if (!res.data || !res.data.downloadUrl)
+            return m.reply('❌ API error: No download link');
+
+        const audioUrl = res.data.downloadUrl;
+
+        await conn.sendMessage(channelJID, {
+            audio: { url: audioUrl },
+            mimetype: 'audio/mpeg',
+            ptt: true
+        });
+
+        m.reply(`✅ Sent successfully\n🎵 ${video.title}`);
+
+    } catch (e) {
+        console.error(e);
+        m.reply('❌ ERROR\n' + e.message);
     }
     break;
 }
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
