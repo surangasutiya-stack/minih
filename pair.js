@@ -345,7 +345,7 @@ async function SendSlide(socket, jid, newsItems) {
             imgBuffer = await resize(item.thumbnail, 300, 200);
         } catch (error) {
             console.error(`Failed to resize image for ${item.title}:`, error);
-            imgBuffer = await Jimp.read('https://cdn.yupra.my.id/yp/fhpkqv8a.jpg');
+            imgBuffer = await Jimp.read('https://files.catbox.moe/pwg89y.jpg');
             imgBuffer = await imgBuffer.resize(300, 200).getBufferAsync(Jimp.MIME_JPEG);
         }
         let imgsc = await prepareWAMessageMedia({ image: imgBuffer }, { upload: socket.waUploadToServer });
@@ -443,12 +443,12 @@ function setupCommandHandlers(socket, number) {
                     const minutes = Math.floor((uptime % 3600) / 60);
                     const seconds = Math.floor(uptime % 60);
 
-                    const title = '┏━❐  `H E L L O W`\n┃ *⭔ Itz:* NECO-MINI\n┃ *⭔ Type:* MINI BOT\n┃ *⭔ Platform:* Heroku\n┃ *⭔ UpTime:* ${hours}h ${minutes}m ${seconds}s\n┗━❐';
-                    const content = `*© WHITESHADOW-MINI*\n` +
+                    const title = '┏━❐  `H E L L O W`\n┃ *⭔ Itz:* ZANTA-MINI\n┃ *⭔ Type:* MINI BOT\n┃ *⭔ Platform:* Heroku\n┃ *⭔ UpTime:* ${hours}h ${minutes}m ${seconds}s\n┗━❐';
+                    const content = `*© ZANTA-MINI*\n` +
                                    `*◯ A B O U T*\n` +
                                    `> This is a lightweight, stable WhatsApp bot designed to run 24/7. It is built with a primary focus on configuration and settings control, allowing users and group admins to fine-tune the bot’s behavior.\n` +
                                    `*◯ D E P L O Y*\n` +
-                                   `> *Website* https://neco-mini-v1.onrender.com`;
+                                   `> *Website* `;
                     const footer = config.BOT_FOOTER;
 
                     await socket.sendMessage(sender, {
@@ -479,7 +479,7 @@ function setupCommandHandlers(socket, number) {
                     });
 
                     const kariyane = `┏━❐  \`H E L L O W\`
-┃ *⭔ Itz:* NECO MD
+┃ *⭔ Itz:* ZANTA-XMD
 ┃ *⭔ Type:* MINI BOT
 ┃ *⭔ Platform:* Heroku
 ┃ *⭔ UpTime:* ${hours}h ${minutes}m ${seconds}s
@@ -502,24 +502,24 @@ function setupCommandHandlers(socket, number) {
 │ ◦ deploy = www.google.com`;
 
                     const sentMsg = await socket.sendMessage(sender, {
-                        image: { url: "https://i.ibb.co/Kjq97rcG/3575.jpg"},
+                        image: { url: "https://files.catbox.moe/pwg89y.jpg"},
                         caption: kariyane,
                         contextInfo: {
-                            mentionedJid: ['94716042889@s.whatsapp.net'],
+                            mentionedJid: ['94771657914@s.whatsapp.net'],
                             groupMentions: [],
                             forwardingScore: 999,
                             isForwarded: false,
                             forwardedNewsletterMessageInfo: {
-                                newsletterJid: '120363395674230271@newsletter',
+                                newsletterJid: '120363405496968264@newsletter',
                                 newsletterName: "SUPPORT 🎀",
                                 serverMessageId: 999
                             },
                             externalAdReply: {
                                 title: 'ᴀ ᴍᴜʟᴛɪ ᴅᴇᴠɪᴄᴇ ᴍɪɴɪ ᴡʜᴀᴛꜱᴀᴘᴘ ʙᴏᴛ ®',
-                                body: '@NECO-MINI 🧼',
+                                body: '@ZANTA-MINI 🔒',
                                 mediaType: 1,
-                                sourceUrl: "https://neco-mini-v1.onrender.com",
-                                thumbnailUrl: 'https://cdn.yupra.my.id/yp/fhpkqv8a.jpg',
+                                sourceUrl: "https://zanta-xmd-52700a96cfff.herokuapp.com/",
+                                thumbnailUrl: 'https://files.catbox.moe/pwg89y.jpg',
                                 renderLargerThumbnail: false,
                                 showAdAttribution: false
                             }
