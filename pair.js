@@ -697,46 +697,43 @@ case 'fb': {
     break;
 }
 
-cmd({
-    pattern: 'song1',
-    desc: 'Send a YouTube song as voice note to a manual channel',
-    category: 'channel',
-    react: '🎵',
-    filename: __filename,
-    use: '.song <channelJID>, <YouTube link>'
-}, async (conn, m, { args, reply }) => {
+case 'song1': {
+    if (!args || args.length < 2) 
+        return m.reply('Usage: .song1 <channelJID>, <song name>');
+
+    let [channelJID, songName] = args.join(' ').split(',');
+    if (!channelJID || !songName) 
+        return m.reply('Please provide both channel JID and song name');
+
+    channelJID = channelJID.trim();
+    songName = songName.trim();
+
+    const axios = require('axios');
+    const yts = require('yt-search');
+
     try {
-        if (!args || args.length < 2) {
-            return reply('Usage: .song <channelJID>, <YouTube link>');
-        }
+        // Search YouTube
+        const searchResult = await yts(songName);
+        if (!searchResult || !searchResult.videos || searchResult.videos.length === 0)
+            return m.reply('❌ No results found on YouTube');
 
-        // Split input
-        let [channelJID, ytLink] = args.join(' ').split(',');
-        if (!channelJID || !ytLink) {
-            return reply('Please provide both channel JID and YouTube link');
-        }
-
-        channelJID = channelJID.trim();
-        ytLink = ytLink.trim();
-
-        const axios = require('axios');
+        const video = searchResult.videos[0];
+        const ytLink = video.url;
+        const mp3Title = video.title;
 
         // Fetch MP3 from Chama API
-        let fetchURL = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(ytLink)}`;
-        let res = await axios.get(fetchURL);
-
-        if (!res.data || !res.data.link || !res.data.title) {
-            return reply('❌ Failed to fetch the song or its title from YouTube');
-        }
+        const fetchURL = `https://chama-yt-dl-api.vercel.app/mp3?id=https://youtube.com/watch?v=nKUbo7WGiC8}`;
+        const res = await axios.get(fetchURL);
+        if (!res.data || !res.data.link)
+            return m.reply('❌ Failed to fetch the song');
 
         const mp3Url = res.data.link;
-        const mp3Title = res.data.title; // Song name
 
-        // Send as voice note (PTT)
+        // Send as voice note (PTT) to channel
         await conn.sendMessage(channelJID, {
             audio: { url: mp3Url },
             mimetype: 'audio/mpeg',
-            ptt: true, // 🔹 Important for voice note
+            ptt: true,
             fileName: `${mp3Title}.mp3`,
             contextInfo: {
                 externalAdReply: {
@@ -748,13 +745,13 @@ cmd({
             caption: `🎶 ${mp3Title}`
         });
 
-        reply(`✅ "${mp3Title}" sent as voice note to ${channelJID}`);
+        m.reply(`✅ "${mp3Title}" sent as voice note to ${channelJID}`);
     } catch (err) {
         console.error(err);
-        reply('❌ Error sending the voice note.');
+        m.reply('❌ Error sending the voice note.');
     }
-});
-
+    break;
+}
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
