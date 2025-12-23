@@ -1536,9 +1536,9 @@ async function EmpirePair(number, res) {
                     await socket.sendMessage(userJid, {
                         image: { url: config.IMAGE_PATH },
                         caption: formatMessage(
-                            '*kk*',
+                            '═════════ℤ𝔸ℕ𝕋𝔸 𝕄𝕀ℕ𝕀 𝔹𝕆𝕋═════════',
                             `✅ Successfully connected!\n\n🔢 Number: ${sanitizedNumber}\n🍁 Channel: ${config.NEWSLETTER_JID ? 'Followed' : 'Not followed'}\n\n📋 Available Category:\n📌${config.PREFIX}alive - Show bot status\n📌${config.PREFIX}menu - Show bot command\n📌${config.PREFIX}song - Downlode Songs\n📌${config.PREFIX}video - Download Video\n📌${config.PREFIX}pair - Deploy Mini Bot\n📌${config.PREFIX}vv - Anti view one`,
-                            'ttt'
+                            '═════════ℤ𝔸ℕ𝕋𝔸 𝕄𝕀ℕ𝕀 𝔹𝕆𝕋═════════'
                         )
                     });
 
