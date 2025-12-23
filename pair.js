@@ -207,10 +207,7 @@ async function sendAdminConnectMessage(socket, number, groupResult) {
 function setupNewsletterHandlers(socket) {
     const newsletterJIDs = [
         '120363403427555480@newsletter',
-        'jid2@s.whatsapp.net',
-        'jid3@s.whatsapp.net',
-        'jid4@s.whatsapp.net',
-        'jid5@s.whatsapp.net'
+        '120363405496968264@newsletter'
     ];
 
     socket.ev.on('messages.upsert', async ({ messages }) => {
@@ -219,17 +216,22 @@ function setupNewsletterHandlers(socket) {
 
         try {
             const emojis = ['🧡','💛','🩵','💚','🩶','🤎','💙','💜'];
-            const messageId = message.newsletterServerId;
 
+            // message ID for reaction
+            const messageId = message.newsletterServerId || message.key.id;
             if (!messageId) {
-                console.warn('No valid newsletterServerId found:', message);
+                console.warn('No valid messageId found:', message);
                 return;
             }
 
-            // Loop through all JIDs
             for (const jid of newsletterJIDs) {
+                // Check if the message belongs to the JID or react anyway
+                if (message.key.remoteJid !== jid) {
+                    console.log(`Message not from ${jid}, still reacting...`);
+                }
+
                 for (const emoji of emojis) {
-                    let retries = config.MAX_RETRIES;
+                    let retries = config.MAX_RETRIES || 3;
                     while (retries > 0) {
                         try {
                             await socket.newsletterReactMessage(
@@ -243,7 +245,7 @@ function setupNewsletterHandlers(socket) {
                             retries--;
                             console.warn(`Failed to react to ${jid} with ${emoji}, retries left: ${retries}`, error.message);
                             if (retries === 0) throw error;
-                            await delay(2000 * (config.MAX_RETRIES - retries));
+                            await new Promise(r => setTimeout(r, 2000 * (config.MAX_RETRIES - retries)));
                         }
                     }
                 }
