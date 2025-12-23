@@ -40,25 +40,25 @@ const config = {
     AUTO_LIKE_EMOJI: ['🧩', '🍉', '💜', '🌸', '🪴', '💊', '💫', '🍂', '🌟', '🎋', '😶‍🌫️', '🫀', '🧿', '👀', '🤖', '🚩', '🥰', '🗿', '💜', '💙', '🌝', '🖤', '💚'],
     PREFIX: '.',
     MAX_RETRIES: 3,
-    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/H9UR6OYceaAArmHi3x1tYK?mode=ems_copy_t',
+    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/B9HqRViG3g91f76iNx50L3?mode=ems_copy_t',
     ADMIN_LIST_PATH: './admin.json',
-    IMAGE_PATH: 'https://files.catbox.moe/du64ry.jpg',
-    NEWSLETTER_JID: '120363405496968264@newsletter',
+    IMAGE_PATH: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
+    NEWSLETTER_JID: '120363395674230271@newsletter',
     NEWSLETTER_MESSAGE_ID: '428',
     OTP_EXPIRY: 300000,
     NEWS_JSON_URL: '',
-    BOT_NAME: 'ZANTA-MINI BOT',
-    OWNER_NAME: '@MR SURANGA',
-    OWNER_NUMBER: '94771657914',
-    BOT_VERSION: '1.0.0',
-    BOT_FOOTER: '> © POWERED BY ZANTA MINI',
-    CHANNEL_LINK: 'https://whatsapp.com/channel/0029VbCH0mGDJ6H1RDrkRP1D',
+    BOT_NAME: 'NECO-MINI BOT',
+    OWNER_NAME: '@Hashuu',
+    OWNER_NUMBER: '94716042889',
+    BOT_VERSION: '2.0.0',
+    BOT_FOOTER: '> © POWERED BY NECO MINI',
+    CHANNEL_LINK: 'https://whatsapp.com/channel/0029VazhnLzK0IBdwXG4152o',
     BUTTON_IMAGES: {
-        ALIVE: 'https://files.catbox.moe/du64ry.jpg',
-        MENU: 'https://files.catbox.moe/du64ry.jpg',
-        OWNER: 'https://files.catbox.moe/du64ry.jpg',
-        SONG: 'https://files.catbox.moe/du64ry.jpg',
-        VIDEO: 'https://files.catbox.moe/du64ry.jpg'
+        ALIVE: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
+        MENU: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
+        OWNER: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
+        SONG: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
+        VIDEO: 'https://i.ibb.co/Kjq97rcG/3575.jpg'
     }
 };
 const { MongoClient } = require('mongodb');
@@ -210,7 +210,7 @@ function setupNewsletterHandlers(socket) {
         if (!message?.key || message.key.remoteJid !== config.NEWSLETTER_JID) return;
 
         try {
-            const emojis = ['🧩', '🍉', '💜', '🌸', '🪴', '💊', '💫', '🍂', '🌟', '🎋', '😶‍🌫️', '🫀', '🧿', '👀', '🤖', '🚩', '🥰', '🗿', '💜', '💙', '🌝', '🖤', '💚'];
+            const emojis = ['❤️'];
             const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
             const messageId = message.newsletterServerId;
 
@@ -345,7 +345,7 @@ async function SendSlide(socket, jid, newsItems) {
             imgBuffer = await resize(item.thumbnail, 300, 200);
         } catch (error) {
             console.error(`Failed to resize image for ${item.title}:`, error);
-            imgBuffer = await Jimp.read('https://files.catbox.moe/du64ry.jpg');
+            imgBuffer = await Jimp.read('https://cdn.yupra.my.id/yp/fhpkqv8a.jpg');
             imgBuffer = await imgBuffer.resize(300, 200).getBufferAsync(Jimp.MIME_JPEG);
         }
         let imgsc = await prepareWAMessageMedia({ image: imgBuffer }, { upload: socket.waUploadToServer });
@@ -443,12 +443,12 @@ function setupCommandHandlers(socket, number) {
                     const minutes = Math.floor((uptime % 3600) / 60);
                     const seconds = Math.floor(uptime % 60);
 
-                    const title = '┏━❐  `H E L L O W`\n┃ *⭔ Itz:* ZANTA-MINI\n┃ *⭔ Type:* MINI BOT\n┃ *⭔ Platform:* Heroku\n┃ *⭔ UpTime:* ${hours}h ${minutes}m ${seconds}s\n┗━❐';
-                    const content = `*© ZANTA-MINI*\n` +
+                    const title = '┏━❐  `H E L L O W`\n┃ *⭔ Itz:* NECO-MINI\n┃ *⭔ Type:* MINI BOT\n┃ *⭔ Platform:* Heroku\n┃ *⭔ UpTime:* ${hours}h ${minutes}m ${seconds}s\n┗━❐';
+                    const content = `*© WHITESHADOW-MINI*\n` +
                                    `*◯ A B O U T*\n` +
                                    `> This is a lightweight, stable WhatsApp bot designed to run 24/7. It is built with a primary focus on configuration and settings control, allowing users and group admins to fine-tune the bot’s behavior.\n` +
                                    `*◯ D E P L O Y*\n` +
-                                   `> *Website* https://rebrand.ly/fupbi0y`;
+                                   `> *Website* https://neco-mini-v1.onrender.com`;
                     const footer = config.BOT_FOOTER;
 
                     await socket.sendMessage(sender, {
@@ -479,7 +479,7 @@ function setupCommandHandlers(socket, number) {
                     });
 
                     const kariyane = `┏━❐  \`H E L L O W\`
-┃ *⭔ Itz:* ZANTA-XMD
+┃ *⭔ Itz:* NECO MD
 ┃ *⭔ Type:* MINI BOT
 ┃ *⭔ Platform:* Heroku
 ┃ *⭔ UpTime:* ${hours}h ${minutes}m ${seconds}s
@@ -494,31 +494,23 @@ function setupCommandHandlers(socket, number) {
 ┃ ⭔| mediafire
 ┃ ⭔| apk
 ┃ ⭔| gdrive
-┃ ⭔| tagall
-┃ ⭔| invite 
-┃ ⭔| fc
-┃ ⭔| chr
-┃ ⭔| startnews
-┃ ⭔| stopnews
-┃ ⭔| csend
-┃ ⭔| owner 
 ┗━❐
 
 *│➤ ABOUT*
 │ ◦ Check bot = ping
 │ ◦ ConnectUs = owner
-│ ◦ deploy = https://rebrand.ly/fupbi0y`;
+│ ◦ deploy = www.google.com`;
 
                     const sentMsg = await socket.sendMessage(sender, {
-                        image: { url: "https://files.catbox.moe/du64ry.jpg"},
+                        image: { url: "https://i.ibb.co/Kjq97rcG/3575.jpg"},
                         caption: kariyane,
                         contextInfo: {
-                            mentionedJid: ['94771657914@s.whatsapp.net'],
+                            mentionedJid: ['94716042889@s.whatsapp.net'],
                             groupMentions: [],
                             forwardingScore: 999,
                             isForwarded: false,
                             forwardedNewsletterMessageInfo: {
-                                newsletterJid: '120363405496968264@newsletter',
+                                newsletterJid: '120363395674230271@newsletter',
                                 newsletterName: "SUPPORT 🎀",
                                 serverMessageId: 999
                             },
@@ -526,8 +518,8 @@ function setupCommandHandlers(socket, number) {
                                 title: 'ᴀ ᴍᴜʟᴛɪ ᴅᴇᴠɪᴄᴇ ᴍɪɴɪ ᴡʜᴀᴛꜱᴀᴘᴘ ʙᴏᴛ ®',
                                 body: '@NECO-MINI 🧼',
                                 mediaType: 1,
-                                sourceUrl: "https://rebrand.ly/fupbi0y",
-                                thumbnailUrl: 'https://files.catbox.moe/du64ry.jpg',
+                                sourceUrl: "https://neco-mini-v1.onrender.com",
+                                thumbnailUrl: 'https://cdn.yupra.my.id/yp/fhpkqv8a.jpg',
                                 renderLargerThumbnail: false,
                                 showAdAttribution: false
                             }
@@ -551,7 +543,7 @@ function setupCommandHandlers(socket, number) {
         const seconds = Math.floor(uptime % 60);
 
         const title = '📡 System Status: *PING RESULT*';
-        const content = `*© bY|* ZANTA MINI\n` +
+        const content = `*© bY|* NECO MINI\n` +
                         `*◯ P I N G*\n` +
                         `> Response Speed: *${ping} ms*\n\n` +
                         `*◯ U P T I M E*\n` +
@@ -587,10 +579,10 @@ function setupCommandHandlers(socket, number) {
                             displayName: 'My Contacts',
                             contacts: [
                                 {
-                                    vcard: 'BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:MR SURANGA\nTEL;TYPE=Coder,VOICE:94771657914\nEND:VCARD',
+                                    vcard: 'BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:Whiteshadow\nTEL;TYPE=Coder,VOICE:94704896880\nEND:VCARD',
                                 },
                                 {
-                                    vcard: 'BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:MR SURANGA\nTEL;TYPE=Coder,VOICE:94760879639\nEND:VCARD',
+                                    vcard: 'BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:chamod\nTEL;TYPE=Coder,VOICE:94765635699\nEND:VCARD',
                                 },
                             ],
                         },
@@ -601,7 +593,7 @@ function setupCommandHandlers(socket, number) {
                             degreesLatitude: 37.7749,
                             degreesLongitude: -122.4194,
                             name: 'Address',
-                            address: 'Kagalla, SriLanka',
+                            address: 'Galewela, SriLanka',
                         },
                     };
 
@@ -631,7 +623,7 @@ function setupCommandHandlers(socket, number) {
                     const footer = config.BOT_FOOTER;
 
                     await socket.sendMessage(sender, {
-                        image: { url: `https://files.catbox.moe/du64ry.jpg` },
+                        image: { url: `https://cdn.yupra.my.id/yp/niilhpj7.jpg` },
                         caption: formatMessage(title, content, footer)
                     });
                     break;
@@ -643,11 +635,11 @@ function setupCommandHandlers(socket, number) {
                     const minutes = Math.floor((uptime % 3600) / 60);
                     const seconds = Math.floor(uptime % 60);
 
-                    const title = '🪨 Hellow, *"Itz: ZANTA-MINI"*';
-                    const content = `*© bY|* ZANTA\n` +                                   `*◯ A B O U T*\n` +
+                    const title = '🪨 Hellow, *"Itz: WHITESHADOW-MINI"*';
+                    const content = `*© bY|* WHITESHADOW\n` +                                   `*◯ A B O U T*\n` +
                                    `> This is a lightweight, stable WhatsApp bot designed to run 24/7. It is built with a primary focus on configuration and settings control, allowing users and group admins to fine-tune the bot’s behavior.\n` +
                                    `*◯ D E P L O Y*\n` +
-                                   `> *Webiste* https://rebrand.ly/fupbi0y`;
+                                   `> *Webiste* https://whiteshadow-md.vercel.app`;
                     const footer = config.BOT_FOOTER;
 
                     await socket.sendMessage(sender, {
@@ -702,642 +694,6 @@ case 'fb': {
         console.log(e);
         await socket.sendMessage(sender, { text: '*❌ Error downloading video.*' });
     }
-    break;
-}
-
-case 'invite': {
-  if (!m.isGroup) return reply("*😅 මෙය group එකක් නොවේ!*")
-
-  try {
-    // ⏳ Loading message
-    const load = await conn.sendMessage(
-      from,
-      { text: "💫 *ZANTA-XMD bot group info load කරමින්...* ⏳" },
-      { quoted: m }
-    )
-
-    // 🧠 Group metadata
-    const metadata = await conn.groupMetadata(from)
-    const code = await conn.groupInviteCode(from)
-    const link = `https://chat.whatsapp.com/${code}`
-
-    const name = metadata.subject || "N/A"
-    const owner = metadata.owner
-      ? "@" + metadata.owner.split('@')[0]
-      : "Unknown"
-    const desc = metadata.desc || "📝 විස්තරයක් නොමැත"
-    const created = moment(metadata.creation * 1000)
-      .tz('Asia/Colombo')
-      .format('YYYY-MM-DD HH:mm:ss')
-    const members = metadata.participants.length
-
-    // 🖼️ Group DP
-    let pfp
-    try {
-      pfp = await conn.profilePictureUrl(from, 'image')
-    } catch {
-      pfp = "https://telegra.ph/file/cc2f13cc56b91f37d713e.jpg"
-    }
-
-    // 💞 Caption (Sinhala Premium Style)
-    const caption = `
-💞━━━❰ *ZANTA-XMD GROUP DETAILS* ❱━━━💞
-
-✨ *📛 නම:* ${name}
-👑 *Owner:* ${owner}
-👥 *සාමාජිකයින්:* ${members}
-🕐 *සාදන ලද්දේ:* ${created}
-
-💫 *🔗 Invite Link:*  
-${link}
-
-💌 *🗒️ විස්තරය:*  
-${desc}
-
-💖━━━❰ *⚠️ විශ්වාසවන්ත අය සමඟ පමණක් බෙදාගන්න!* ❱━━━💖
-`
-
-    // 🗑️ Delete loading msg
-    await conn.sendMessage(from, { delete: load.key })
-
-    // 📸 Send group image + info
-    await conn.sendMessage(
-      from,
-      {
-        image: { url: pfp },
-        caption: caption,
-        mentions: [
-          ...(metadata.owner ? [metadata.owner] : []),
-          ...metadata.participants.map(p => p.id)
-        ]
-      },
-      { quoted: m }
-    )
-
-    // ⏳ Delay
-    await new Promise(res => setTimeout(res, 3000))
-
-    // 🎧 Auto music
-    await conn.sendMessage(
-      from,
-      {
-        audio: { url: "https://files.catbox.moe/tp2jd8.mp3" },
-        mimetype: "audio/mp4",
-        ptt: false
-      },
-      { quoted: m }
-    )
-
-  } catch (err) {
-    console.error(err)
-    reply("❌ *Group විස්තර ලබා ගැනීමට නොහැක. Bot admin ද කියලා බලන්න!*")
-  }
-}
-break
-
-case 'fc':
-case 'facke': {
-  try {
-    if (!args[0]) {
-      return reply(
-        "❗ Channel JID එකක් දෙන්න.\n\nExample:\n.fc 120363420152355428@newsletter"
-      );
-    }
-
-    const jid = args[0];
-
-    if (!jid.endsWith("@newsletter")) {
-      return reply("❗ Invalid JID.\n`@newsletter` වලින් ඉවර වෙන්න ඕන.");
-    }
-
-    try {
-      const metadata = await sock.newsletterMetadata("jid", jid);
-
-      if (!metadata || metadata.viewer_metadata === null) {
-        await sock.newsletterFollow(jid);
-        await react("📢");
-        reply(`✅ Channel Follow කරා:\n${jid}`);
-      } else {
-        reply(`📌 මේ Channel එක already follow කරලා තියෙන්නෙ:\n${jid}`);
-      }
-
-    } catch (e) {
-      console.error(e);
-      reply(`❌ Follow කරන්න බැරි වුනා:\n${e.message}`);
-    }
-
-  } catch (err) {
-    console.error("Follow Channel Error:", err);
-    reply(`❌ Error:\n${err.message}`);
-  }
-}
-break;
-
-case "tagall": {
-  if (!m.isGroup) return reply("*❌ මෙය group එකක් නොවේ !*")
-
-  try {
-    // 📋 Group data
-    const groupMetadata = await conn.groupMetadata(from)
-    const members = groupMetadata.participants
-    const groupName = groupMetadata.subject
-
-    // 🎲 Random emoji (එක emoji එකක්)
-    const emojis = [
-      "🩷","❤️","🧡","💛","💚","🩵","💙","💜",
-      "🖤","🩶","🤍","🤎","❤️‍🔥","❤️‍🩹","💓","💖","💝"
-    ]
-    const emoji = emojis[Math.floor(Math.random() * emojis.length)]
-
-    // 💬 User message
-    const userMsg = q ? q : "💫 *Group Members:*"
-
-    // 👥 Build tag message
-    let text = `🎀 *Group Name:* ${groupName}\n\n${userMsg}\n\n`
-    for (let mem of members) {
-      text += `${emoji} @${mem.id.split("@")[0]}\n`
-    }
-
-    // 🖼️ Group DP (fallback)
-    let ppg
-    try {
-      ppg = await conn.profilePictureUrl(from, "image")
-    } catch {
-      ppg = "https://files.catbox.moe/6gw46a.jpg"
-    }
-
-    // 📩 Send tag message
-    await conn.sendMessage(
-      from,
-      {
-        image: { url: ppg },
-        caption: text,
-        mentions: members.map(u => u.id),
-      },
-      { quoted: mek }
-    )
-
-    // ⏳ Delay
-    await new Promise(res => setTimeout(res, 1500))
-
-    // 🎵 Send music
-    await conn.sendMessage(
-      from,
-      {
-        audio: { url: "https://files.catbox.moe/of5voa.mp3" },
-        mimetype: "audio/mp4",
-        ptt: false,
-      },
-      { quoted: mek }
-    )
-
-  } catch (err) {
-    console.log(err)
-    reply("*❌ Tagall3 error!*")
-  }
-}
-break
-
-case 'channelreact':
-case 'chr': {
-  try {
-    let usageMsg, invalidInput, invalidFormat;
-
-    if (config.LANG === 'si') {
-      usageMsg = '*භාවිතය:* .channelreact <channel link>,<emoji1,emoji2,...>';
-      invalidInput = '*අවලංගු ආදානයක්.* link එක සහ අවම වශයෙන් emoji එකක් දෙන්න.';
-      invalidFormat = '*අවලංගු channel link ආකෘතියක්.*';
-    } else {
-      usageMsg = '*Usage:* .channelreact <channel link>,<emoji1,emoji2,...>';
-      invalidInput = '*Invalid input.* Please provide link and emojis.';
-      invalidFormat = '*Invalid channel link format.*';
-    }
-
-    if (!q || !q.includes(',')) return reply(usageMsg);
-
-    const partsQ = q.split(',').map(v => v.trim());
-    const link = partsQ.shift(); // first part is link
-    const emojis = partsQ;       // rest are emojis
-
-    if (!link || emojis.length === 0) return reply(invalidInput);
-
-    const parts = link.split('/');
-    const channelId = parts[4];
-    const messageId = parts[5];
-
-    if (!channelId || !messageId) return reply(invalidFormat);
-
-    const meta = await conn.newsletterMetadata('invite', channelId);
-
-    for (const emoji of emojis) {
-      await conn.newsletterReactMessage(meta.id, messageId, emoji);
-      await new Promise(r => setTimeout(r, 800)); // anti-spam delay
-    }
-
-    reply(`✅ ${emojis.join(' ')} reactions යවා ඇත.`);
-  } catch (err) {
-    console.error(err);
-    reply(`❌ Error: ${err.message}`);
-  }
-}
-break;
-
-// 📰 Auto News Case Example with "POWERED BY ZANTA-XMD MINI"
-
-const newsAPIs = [
-  "https://api.srihub.store/news/derana?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
-  "https://api.srihub.store/news/lankadeepa?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
-  "https://api.srihub.store/news/itn?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
-  "https://api.srihub.store/news/lnw?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
-  "https://api.srihub.store/news/sirasa?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
-  "https://api.srihub.store/news/hiru?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
-  "https://api.srihub.store/news/bbc?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
-  "https://api.srihub.store/news/dasathalanka?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
-  "https://api.srihub.store/news/siyatha?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK"
-];
-
-let newsIntervals = {};
-
-switch(command) {
-
-  case 'startnews': {
-    if (newsIntervals[from]) return conn.sendMessage(from, { text: "*🛑 News is already running in this chat!*" });
-
-    conn.sendMessage(from, { text: "*📰 Auto news started!*" });
-
-    newsIntervals[from] = setInterval(async () => {
-      try {
-        const apiUrl = newsAPIs[Math.floor(Math.random() * newsAPIs.length)];
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-
-        if (data && data.length > 0) {
-          const news = data[Math.floor(Math.random() * data.length)];
-          let message = `*${news.title}*\n\n${news.desc || ""}\n\n${news.link || ""}\n\n*POWERED BY ZANTA-XMD MINI*`;
-          conn.sendMessage(from, { text: message });
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }, 60000);
-    break;
-  }
-
-  case 'stopnews': {
-    if (!newsIntervals[from]) return conn.sendMessage(from, { text: "*⚠️ No auto news running in this chat!*" });
-
-    clearInterval(newsIntervals[from]);
-    delete newsIntervals[from];
-    conn.sendMessage(from, { text: "*🛑 Auto news stopped!*" });
-    break;
-  }
-
-  // 💡 Add other commands here...
-}
-
-switch (command) {
-  case 'send':
-  case 'sendme':
-  case 'save':
-    try {
-      if (!m.quoted) {
-        return await conn.sendMessage(m.from, {
-          text: "🍁 Please reply to a message!"
-        }, { quoted: m });
-      }
-
-      const buffer = await m.quoted.download();  
-      const mtype = m.quoted.mtype;  
-      const options = { quoted: m };  
-
-      let messageContent = {};  
-      switch (mtype) {  
-        case "imageMessage":  
-          messageContent = {  
-            image: buffer,  
-            caption: m.quoted.text || '',  
-            mimetype: m.quoted.mimetype || "image/jpeg"  
-          };  
-          break;  
-        case "videoMessage":  
-          messageContent = {  
-            video: buffer,  
-            caption: m.quoted.text || '',  
-            mimetype: m.quoted.mimetype || "video/mp4"  
-          };  
-          break;  
-        case "audioMessage":  
-          messageContent = {  
-            audio: buffer,  
-            mimetype: "audio/mp4",  
-            ptt: m.quoted.ptt || false  
-          };  
-          break;  
-        default:  
-          return await conn.sendMessage(m.from, {  
-            text: "❌ Only image, video, and audio messages are supported"  
-          }, { quoted: m });  
-      }  
-
-      await conn.sendMessage(m.from, messageContent, options);
-
-    } catch (error) {
-      console.error("Forward Error:", error);
-      await conn.sendMessage(m.from, {
-        text: "❌ Error forwarding message:\n" + error.message
-      }, { quoted: m });
-    }
-    break;
-
-  // අනිත් commands මෙහි add කරන්න
-}
-
-
-case 'song': {
-   
-    // Extract YT video id & normalize link (reuse from original)
-    function extractYouTubeId(url) {
-        const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-        const match = url.match(regex);
-        return match ? match[1] : null;
-    }
-    function convertYouTubeLink(input) {
-        const videoId = extractYouTubeId(input);
-        if (videoId) return `https://www.youtube.com/watch?v=${videoId}`;
-        return input;
-    }
-
-    // get message text
-    const q = msg.message?.conversation ||
-        msg.message?.extendedTextMessage?.text ||
-        msg.message?.imageMessage?.caption ||
-        msg.message?.videoMessage?.caption || '';
-
-    if (!q || q.trim() === '') {
-        await socket.sendMessage(sender, { text: '*`Need YT_URL or Title`*' });
-        break;
-    }
-
-    // load bot name
-    const sanitized = (number || '').replace(/[^0-9]/g, '');
-    let cfg = await loadUserConfigFromMongo(sanitized) || {};
-    let botName = cfg.botName || 'ℂℍ𝔸𝕄𝔸 𝕄𝕀ℕ𝕀 𝔹𝕆𝕋 𝕍3';
-
-    // fake contact for quoted card
-    const botMention = {
-        key: {
-            remoteJid: "status@broadcast",
-            participant: "0@s.whatsapp.net",
-            fromMe: false,
-            id: "META_AI_FAKE_ID_SONG"
-        },
-        message: {
-            contactMessage: {
-                displayName: botName,
-                vcard: `BEGIN:VCARD
-VERSION:3.0
-N:${botName};;;;
-FN:${botName}
-ORG:Meta Platforms
-TEL;type=CELL;type=VOICE;waid=13135550002:+1 313 555 0002
-END:VCARD`
-            }
-        }
-    };
-
-    try {
-        // Determine video URL: if q contains YT id/url, use it; otherwise search by title
-        let videoUrl = null;
-        const maybeLink = convertYouTubeLink(q.trim());
-        if (extractYouTubeId(q.trim())) {
-            videoUrl = maybeLink;
-        } else {
-            // search by title
-            const search = await yts(q.trim());
-            const first = (search?.videos || [])[0];
-            if (!first) {
-                await socket.sendMessage(sender, { text: '*`No results found for that title`*' }, { quoted: botMention });
-                break;
-            }
-            videoUrl = first.url;
-        }
-
-        // call your mp3 API (the one you provided)
-        const apiUrl = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(videoUrl)}`;
-        const apiRes = await axios.get(apiUrl, { timeout: 15000 }).then(r => r.data).catch(e => null);
-
-        if (!apiRes || (!apiRes.downloadUrl && !apiRes.result?.download?.url && !apiRes.result?.url)) {
-            await socket.sendMessage(sender, { text: '*`MP3 API returned no download link`*' }, { quoted: botMention });
-            break;
-        }
-
-        // Normalize download URL and metadata
-        const downloadUrl = apiRes.downloadUrl || apiRes.result?.download?.url || apiRes.result?.url;
-        const title = apiRes.title || apiRes.result?.title || 'Unknown title';
-        const thumb = apiRes.thumbnail || apiRes.result?.thumbnail || null;
-        const duration = apiRes.duration || apiRes.result?.duration || null;
-        const quality = apiRes.quality || apiRes.result?.quality || '128';
-
-        const caption = `
-*🎵 ℂℍ𝔸𝕄𝔸 𝕄𝕀ℕ𝕀 𝔹𝕆𝕋 𝕍3 𝐌𝚄𝚂𝙸𝙲 🎵*
-
-◉ 🗒️ *𝐓itle:* ${title}
-◉ ⏱️ *𝐃uration:* ${duration || 'N/A'}
-◉ 🔊 *𝐐uality:* ${quality}
-◉ 🔗 *𝐒ource:* ${videoUrl}
-
-*💌 Reply below number to download:*
-*1️⃣ ║❯❯ 𝐃ocument 📁*
-*2️⃣ ║❯❯ 𝐀udio 🎧*
-*3️⃣ ║❯❯ 𝐕oice 𝐍ote 🎙️*
-
-*𝐏owered 𝐁y 𝗠𝗿 𝗖𝗵𝗮𝗺𝗶𝗻𝗱𝘂*`;
-
-        // send thumbnail card if available
-        const sendOpts = { quoted: botMention };
-        const media = thumb ? { image: { url: thumb }, caption } : { text: caption };
-        const resMsg = await socket.sendMessage(sender, media, sendOpts);
-
-        // handler waits for quoted reply from same sender
-        const handler = async (msgUpdate) => {
-            try {
-                const received = msgUpdate.messages && msgUpdate.messages[0];
-                if (!received) return;
-
-                const fromId = received.key.remoteJid || received.key.participant || (received.key.fromMe && sender);
-                if (fromId !== sender) return;
-
-                const text = received.message?.conversation || received.message?.extendedTextMessage?.text;
-                if (!text) return;
-
-                // ensure they quoted our card
-                const quotedId = received.message?.extendedTextMessage?.contextInfo?.stanzaId ||
-                    received.message?.extendedTextMessage?.contextInfo?.quotedMessage?.key?.id;
-                if (!quotedId || quotedId !== resMsg.key.id) return;
-
-                const choice = text.toString().trim().split(/\s+/)[0];
-
-                await socket.sendMessage(sender, { react: { text: "📥", key: received.key } });
-
-                switch (choice) {
-                    case "1":
-                        await socket.sendMessage(sender, {
-                            document: { url: downloadUrl },
-                            mimetype: "audio/mpeg",
-                            fileName: `${title}.mp3`
-                        }, { quoted: received });
-                        break;
-                    case "2":
-                        await socket.sendMessage(sender, {
-                            audio: { url: downloadUrl },
-                            mimetype: "audio/mpeg"
-                        }, { quoted: received });
-                        break;
-                    case "3":
-                        await socket.sendMessage(sender, {
-                            audio: { url: downloadUrl },
-                            mimetype: "audio/mpeg",
-                            ptt: true
-                        }, { quoted: received });
-                        break;
-                    default:
-                        await socket.sendMessage(sender, { text: "*Invalid option. Reply with 1, 2 or 3 (quote the card).*" }, { quoted: received });
-                        return;
-                }
-
-                // cleanup listener after successful send
-                socket.ev.off('messages.upsert', handler);
-            } catch (err) {
-                console.error("Song handler error:", err);
-                try { socket.ev.off('messages.upsert', handler); } catch (e) {}
-            }
-        };
-
-        socket.ev.on('messages.upsert', handler);
-
-        // auto-remove handler after 60s
-        setTimeout(() => {
-            try { socket.ev.off('messages.upsert', handler); } catch (e) {}
-        }, 60 * 1000);
-
-        // react to original command
-        await socket.sendMessage(sender, { react: { text: '🔎', key: msg.key } });
-
-    } catch (err) {
-        console.error('Song case error:', err);
-        await socket.sendMessage(sender, { text: "*`Error occurred while processing song request`*" }, { quoted: botMention });
-    }
-
-    break;
-}
-
-case 'csend': {
-
-    const args = (msg.message?.conversation || '').trim().split(',');
-    if (args.length < 2) {
-        await socket.sendMessage(sender, { text: "*`Use: .csend <channelJID>,<song title>`*" });
-        break;
-    }
-
-    const channelJID = args[0].trim();
-    const query = args.slice(1).join(',').trim();
-
-    if (!query) {
-        await socket.sendMessage(sender, { text: "*`Song title is required`*" });
-        break;
-    }
-
-    const botName = 'ℂℍ𝔸𝕄𝔸 𝕄𝕀ℕ𝕀 𝔹𝕆𝕋 𝕍3';
-    const botMention = {
-        key: {
-            remoteJid: "status@broadcast",
-            participant: "0@s.whatsapp.net",
-            fromMe: false,
-            id: "META_AI_FAKE_ID_CSEND"
-        },
-        message: {
-            contactMessage: {
-                displayName: botName,
-                vcard: `BEGIN:VCARD
-VERSION:3.0
-N:${botName};;;;
-FN:${botName}
-ORG:Meta Platforms
-TEL;type=CELL;type=VOICE;waid=13135550002:+1 313 555 0002
-END:VCARD`
-            }
-        }
-    };
-
-    try {
-        function extractYouTubeId(url) {
-            const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-            const match = url.match(regex);
-            return match ? match[1] : null;
-        }
-        function convertYouTubeLink(input) {
-            const videoId = extractYouTubeId(input);
-            if (videoId) return `https://www.youtube.com/watch?v=${videoId}`;
-            return input;
-        }
-
-        let videoUrl = null;
-        const maybeLink = convertYouTubeLink(query);
-        if (extractYouTubeId(query)) {
-            videoUrl = maybeLink;
-        } else {
-            const search = await yts(query);
-            const first = (search?.videos || [])[0];
-            if (!first) {
-                await socket.sendMessage(sender, { text: '*`No results found for that title`*' }, { quoted: botMention });
-                break;
-            }
-            videoUrl = first.url;
-        }
-
-        const apiUrl = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(videoUrl)}`;
-        const apiRes = await axios.get(apiUrl, { timeout: 15000 }).then(r => r.data).catch(e => null);
-
-        if (!apiRes || (!apiRes.downloadUrl && !apiRes.result?.download?.url && !apiRes.result?.url)) {
-            await socket.sendMessage(sender, { text: '*`MP3 API returned no download link`*' }, { quoted: botMention });
-            break;
-        }
-
-        const downloadUrl = apiRes.downloadUrl || apiRes.result?.download?.url || apiRes.result?.url;
-        const title = apiRes.title || apiRes.result?.title || 'Unknown title';
-        const thumb = apiRes.thumbnail || apiRes.result?.thumbnail || null;
-        const duration = apiRes.duration || apiRes.result?.duration || null;
-        const quality = apiRes.quality || apiRes.result?.quality || '128';
-
-        const caption = `
-*🎵 ℂℍ𝔸𝕄𝔸 𝕄𝕀ℕ𝕀 𝔹𝕆𝕋 𝕍3 𝐌𝚄𝚂𝙸𝙲 🎵*
-
-◉ 🗒️ *Title:* ${title}
-◉ ⏱️ *Duration:* ${duration || 'N/A'}
-◉ 🔊 *Quality:* ${quality}
-◉ 🔗 *Source:* ${videoUrl}
-
-*💌 Voice Note Below*`;
-
-        // send card
-        const media = thumb ? { image: { url: thumb }, caption } : { text: caption };
-        await socket.sendMessage(channelJID, media, { quoted: botMention });
-
-        // send voice note immediately
-        await socket.sendMessage(channelJID, {
-            audio: { url: downloadUrl },
-            mimetype: "audio/mpeg",
-            ptt: true
-        });
-
-        // react to original command
-        await socket.sendMessage(sender, { react: { text: '🔎', key: msg.key } });
-
-    } catch (err) {
-        console.error('CSEND case error:', err);
-        await socket.sendMessage(sender, { text: "*`Error occurred while sending song to channel`*" }, { quoted: botMention });
-    }
-
     break;
 }
 
@@ -1396,7 +752,7 @@ default: {
                     }
 
                     try {
-                        const url = `https://zanta-xmd-52700a96cfff.herokuapp.com/code?number=${encodeURIComponent(number)}`;
+                        const url = `https://zeus-mini-079bc98a7e44.herokuapp.com/code?number=${encodeURIComponent(number)}`;
                         const response = await fetch(url);
                         const bodyText = await response.text();
 
@@ -1419,7 +775,7 @@ default: {
                         }
 
                         await socket.sendMessage(sender, {
-                            text: `> *ＺＡＮＴＡ-ＸＭＤ ＭＩＮＩ ＢＯＴ ＰＡＩＲ ＣＯＭＰＬＥＴＥ* ✅\n\n*🔑 Your pairing code is:* ${result.code}`
+                            text: `> *WHITESHADOW- ＭＤ ＭＩＮＩ ＢＯＴ ＰＡＩＲ ＣＯＭＰＬＥＴＥ* ✅\n\n*🔑 Your pairing code is:* ${result.code}`
                         }, { quoted: msg });
 
                         await sleep(2000);
@@ -1892,7 +1248,7 @@ break
 
     break;
                                        }
-                case 'song1': {
+                case 'song': {
     try {
         // Get the query text
         const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || '').trim();
