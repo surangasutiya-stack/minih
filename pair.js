@@ -695,6 +695,8 @@ case 'fb': {
         await socket.sendMessage(sender, { text: '*❌ Error downloading video.*' });
     }
     break;
+}
+
 
 case 'song1': {
     const yts = require('yt-search');
