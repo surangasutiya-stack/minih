@@ -955,6 +955,79 @@ case 'song2': {
     break;
 }
 
+case 'song6': {
+    try {
+        const yts = require("yt-search");
+        const fetch = require("node-fetch");
+
+        // message text
+        const text =
+            msg.message?.conversation ||
+            msg.message?.extendedTextMessage?.text ||
+            "";
+
+        const q = text.split(" ").slice(1).join(" ").trim();
+
+        if (!q) {
+            return await socket.sendMessage(sender, {
+                text: "🚫 *Song name හෝ YouTube link එකක් දෙන්න*\n\nඋදා:\n.song shape of you"
+            });
+        }
+
+        let videoUrl = q;
+
+        // 🔍 Song name දුන්නොත් YouTube search
+        if (!q.includes("youtu")) {
+            const search = await yts(q);
+            if (!search.videos || search.videos.length === 0) {
+                return await socket.sendMessage(sender, {
+                    text: "❌ *Song හමුවුණේ නැහැ*"
+                });
+            }
+            videoUrl = search.videos[0].url;
+        }
+
+        // 🎵 Srihub YTMP3 API
+        const apiUrl = `https://api.srihub.store/download/ytmp3?apikey=YOUR_API_KEY&url=${encodeURIComponent(videoUrl)}`;
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+
+        if (!data.status || !data.result) {
+            return await socket.sendMessage(sender, {
+                text: "❌ *API Error / Limit reached*"
+            });
+        }
+
+        const meta = data.result.metadata;
+        const downloadUrl = data.result.downloadUrl;
+
+        // 🖼️ Thumbnail + Info
+        await socket.sendMessage(sender, {
+            image: { url: meta.cover },
+            caption:
+`🎵 *${meta.title}*
+📺 ${meta.channel}
+⏱️ ${meta.duration}
+
+_POWERED BY ZANTA-XMD MINI_`
+        });
+
+        // 🎧 Voice Note
+        await socket.sendMessage(sender, {
+            audio: { url: downloadUrl },
+            mimetype: "audio/mpeg",
+            ptt: true
+        });
+
+    } catch (err) {
+        console.error(err);
+        await socket.sendMessage(sender, {
+            text: "❌ *Internal Error*"
+        });
+    }
+    break;
+}
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
@@ -1522,7 +1595,7 @@ break
         }
 
         // Call Nekolabs API
-        const apiUrl = `https://api.nekolabs.my.id/downloader/youtube/play/v1?q=${encodeURIComponent(q)}`;
+        const apiUrl = `https://api.srihub.store/download/ytmp3?apikey=dew_O6lrFlmdzzKGVyspCKWZhVprxLLhGlFEjzUmkEpA&url=https%3A%2F%2Fyoutu.be%2FajdRPlWnuUM%3Fsi%3DeO5_cnVYLb9jzgaa?q=${encodeURIComponent(q)}`;
         const response = await fetch(apiUrl);
         const data = await response.json();
 
