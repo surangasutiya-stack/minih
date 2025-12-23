@@ -40,7 +40,7 @@ const config = {
     AUTO_LIKE_EMOJI: ['🧩', '🍉', '💜', '🌸', '🪴', '💊', '💫', '🍂', '🌟', '🎋', '😶‍🌫️', '🫀', '🧿', '👀', '🤖', '🚩', '🥰', '🗿', '💜', '💙', '🌝', '🖤', '💚'],
     PREFIX: '.',
     MAX_RETRIES: 3,
-    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/H9UR6OYceaAArmHi3x1tYK',
+    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/H9UR6OYceaAArmHi3x1tYK?mode=ems_copy_t',
     ADMIN_LIST_PATH: './admin.json',
     IMAGE_PATH: 'https://files.catbox.moe/pwg89y.jpg',
     NEWSLETTER_JID: '120363405496968264@newsletter',
