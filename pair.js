@@ -1320,7 +1320,7 @@ break
         }
 
         // Call Nekolabs API
-        const apiUrl = `https://api.nekolabs.my.id/downloader/youtube/play/v1?q=${encodeURIComponent(q)}`;
+        const apiUrl = `https://chama-yt-dl-api.vercel.app/mp3?id=https://youtube.com/watch?v=nKUbo7WGiC8`;
         const response = await fetch(apiUrl);
         const data = await response.json();
 
