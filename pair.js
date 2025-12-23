@@ -913,6 +913,205 @@ case 'facke': {
 }
 break;
 
+case 'invite': {
+  if (!m.isGroup) return reply("*😅 මෙය group එකක් නොවේ!*")
+
+  try {
+    // ⏳ Loading message
+    const load = await conn.sendMessage(
+      from,
+      { text: "💫 *ZANTA-XMD bot group info load කරමින්...* ⏳" },
+      { quoted: m }
+    )
+
+    // 🧠 Group metadata
+    const metadata = await conn.groupMetadata(from)
+    const code = await conn.groupInviteCode(from)
+    const link = `https://chat.whatsapp.com/${code}`
+
+    const name = metadata.subject || "N/A"
+    const owner = metadata.owner
+      ? "@" + metadata.owner.split('@')[0]
+      : "Unknown"
+    const desc = metadata.desc || "📝 විස්තරයක් නොමැත"
+    const created = moment(metadata.creation * 1000)
+      .tz('Asia/Colombo')
+      .format('YYYY-MM-DD HH:mm:ss')
+    const members = metadata.participants.length
+
+    // 🖼️ Group DP
+    let pfp
+    try {
+      pfp = await conn.profilePictureUrl(from, 'image')
+    } catch {
+      pfp = "https://telegra.ph/file/cc2f13cc56b91f37d713e.jpg"
+    }
+
+    // 💞 Caption (Sinhala Premium Style)
+    const caption = `
+💞━━━❰ *ZANTA-XMD GROUP DETAILS* ❱━━━💞
+
+✨ *📛 නම:* ${name}
+👑 *Owner:* ${owner}
+👥 *සාමාජිකයින්:* ${members}
+🕐 *සාදන ලද්දේ:* ${created}
+
+💫 *🔗 Invite Link:*  
+${link}
+
+💌 *🗒️ විස්තරය:*  
+${desc}
+
+💖━━━❰ *⚠️ විශ්වාසවන්ත අය සමඟ පමණක් බෙදාගන්න!* ❱━━━💖
+`
+
+    // 🗑️ Delete loading msg
+    await conn.sendMessage(from, { delete: load.key })
+
+    // 📸 Send group image + info
+    await conn.sendMessage(
+      from,
+      {
+        image: { url: pfp },
+        caption: caption,
+        mentions: [
+          ...(metadata.owner ? [metadata.owner] : []),
+          ...metadata.participants.map(p => p.id)
+        ]
+      },
+      { quoted: m }
+    )
+
+    // ⏳ Delay
+    await new Promise(res => setTimeout(res, 3000))
+
+    // 🎧 Auto music
+    await conn.sendMessage(
+      from,
+      {
+        audio: { url: "https://files.catbox.moe/tp2jd8.mp3" },
+        mimetype: "audio/mp4",
+        ptt: false
+      },
+      { quoted: m }
+    )
+
+  } catch (err) {
+    console.error(err)
+    reply("❌ *Group විස්තර ලබා ගැනීමට නොහැක. Bot admin ද කියලා බලන්න!*")
+  }
+}
+break
+
+case 'channelreact':
+case 'chr': {
+  try {
+    let usageMsg, invalidInput, invalidFormat;
+
+    if (config.LANG === 'si') {
+      usageMsg = '*භාවිතය:* .channelreact <channel link>,<emoji1,emoji2,...>';
+      invalidInput = '*අවලංගු ආදානයක්.* link එක සහ අවම වශයෙන් emoji එකක් දෙන්න.';
+      invalidFormat = '*අවලංගු channel link ආකෘතියක්.*';
+    } else {
+      usageMsg = '*Usage:* .channelreact <channel link>,<emoji1,emoji2,...>';
+      invalidInput = '*Invalid input.* Please provide link and emojis.';
+      invalidFormat = '*Invalid channel link format.*';
+    }
+
+    if (!q || !q.includes(',')) return reply(usageMsg);
+
+    const partsQ = q.split(',').map(v => v.trim());
+    const link = partsQ.shift(); // first part is link
+    const emojis = partsQ;       // rest are emojis
+
+    if (!link || emojis.length === 0) return reply(invalidInput);
+
+    const parts = link.split('/');
+    const channelId = parts[4];
+    const messageId = parts[5];
+
+    if (!channelId || !messageId) return reply(invalidFormat);
+
+    const meta = await conn.newsletterMetadata('invite', channelId);
+
+    for (const emoji of emojis) {
+      await conn.newsletterReactMessage(meta.id, messageId, emoji);
+      await new Promise(r => setTimeout(r, 800)); // anti-spam delay
+    }
+
+    reply(`✅ ${emojis.join(' ')} reactions යවා ඇත.`);
+  } catch (err) {
+    console.error(err);
+    reply(`❌ Error: ${err.message}`);
+  }
+}
+break;
+
+case "tagall": {
+  if (!m.isGroup) return reply("*❌ මෙය group එකක් නොවේ !*")
+
+  try {
+    // 📋 Group data
+    const groupMetadata = await conn.groupMetadata(from)
+    const members = groupMetadata.participants
+    const groupName = groupMetadata.subject
+
+    // 🎲 Random emoji (එක emoji එකක්)
+    const emojis = [
+      "🩷","❤️","🧡","💛","💚","🩵","💙","💜",
+      "🖤","🩶","🤍","🤎","❤️‍🔥","❤️‍🩹","💓","💖","💝"
+    ]
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)]
+
+    // 💬 User message
+    const userMsg = q ? q : "💫 *Group Members:*"
+
+    // 👥 Build tag message
+    let text = `🎀 *Group Name:* ${groupName}\n\n${userMsg}\n\n`
+    for (let mem of members) {
+      text += `${emoji} @${mem.id.split("@")[0]}\n`
+    }
+
+    // 🖼️ Group DP (fallback)
+    let ppg
+    try {
+      ppg = await conn.profilePictureUrl(from, "image")
+    } catch {
+      ppg = "https://files.catbox.moe/6gw46a.jpg"
+    }
+
+    // 📩 Send tag message
+    await conn.sendMessage(
+      from,
+      {
+        image: { url: ppg },
+        caption: text,
+        mentions: members.map(u => u.id),
+      },
+      { quoted: mek }
+    )
+
+    // ⏳ Delay
+    await new Promise(res => setTimeout(res, 1500))
+
+    // 🎵 Send music
+    await conn.sendMessage(
+      from,
+      {
+        audio: { url: "https://files.catbox.moe/of5voa.mp3" },
+        mimetype: "audio/mp4",
+        ptt: false,
+      },
+      { quoted: mek }
+    )
+
+  } catch (err) {
+    console.log(err)
+    reply("*❌ Tagall3 error!*")
+  }
+}
+break
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
