@@ -543,7 +543,7 @@ function setupCommandHandlers(socket, number) {
         const seconds = Math.floor(uptime % 60);
 
         const title = '📡 System Status: *PING RESULT*';
-        const content = `*© bY|* NECO MINI\n` +
+        const content = `*© bY|* ZANTA MINI\n` +
                         `*◯ P I N G*\n` +
                         `> Response Speed: *${ping} ms*\n\n` +
                         `*◯ U P T I M E*\n` +
@@ -623,7 +623,7 @@ function setupCommandHandlers(socket, number) {
                     const footer = config.BOT_FOOTER;
 
                     await socket.sendMessage(sender, {
-                        image: { url: `https://cdn.yupra.my.id/yp/niilhpj7.jpg` },
+                        image: { url: `https://files.catbox.moe/pwg89y.jpg` },
                         caption: formatMessage(title, content, footer)
                     });
                     break;
@@ -635,11 +635,11 @@ function setupCommandHandlers(socket, number) {
                     const minutes = Math.floor((uptime % 3600) / 60);
                     const seconds = Math.floor(uptime % 60);
 
-                    const title = '🪨 Hellow, *"Itz: WHITESHADOW-MINI"*';
+                    const title = '🪨 Hellow, *"Itz: ZANTA-MINI"*';
                     const content = `*© bY|* WHITESHADOW\n` +                                   `*◯ A B O U T*\n` +
                                    `> This is a lightweight, stable WhatsApp bot designed to run 24/7. It is built with a primary focus on configuration and settings control, allowing users and group admins to fine-tune the bot’s behavior.\n` +
                                    `*◯ D E P L O Y*\n` +
-                                   `> *Webiste* https://whiteshadow-md.vercel.app`;
+                                   `> *Webiste* `;
                     const footer = config.BOT_FOOTER;
 
                     await socket.sendMessage(sender, {
