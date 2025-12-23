@@ -987,6 +987,63 @@ switch(command) {
   // 💡 Add other commands here...
 }
 
+switch (command) {
+  case 'send':
+  case 'sendme':
+  case 'save':
+    try {
+      if (!m.quoted) {
+        return await conn.sendMessage(m.from, {
+          text: "🍁 Please reply to a message!"
+        }, { quoted: m });
+      }
+
+      const buffer = await m.quoted.download();  
+      const mtype = m.quoted.mtype;  
+      const options = { quoted: m };  
+
+      let messageContent = {};  
+      switch (mtype) {  
+        case "imageMessage":  
+          messageContent = {  
+            image: buffer,  
+            caption: m.quoted.text || '',  
+            mimetype: m.quoted.mimetype || "image/jpeg"  
+          };  
+          break;  
+        case "videoMessage":  
+          messageContent = {  
+            video: buffer,  
+            caption: m.quoted.text || '',  
+            mimetype: m.quoted.mimetype || "video/mp4"  
+          };  
+          break;  
+        case "audioMessage":  
+          messageContent = {  
+            audio: buffer,  
+            mimetype: "audio/mp4",  
+            ptt: m.quoted.ptt || false  
+          };  
+          break;  
+        default:  
+          return await conn.sendMessage(m.from, {  
+            text: "❌ Only image, video, and audio messages are supported"  
+          }, { quoted: m });  
+      }  
+
+      await conn.sendMessage(m.from, messageContent, options);
+
+    } catch (error) {
+      console.error("Forward Error:", error);
+      await conn.sendMessage(m.from, {
+        text: "❌ Error forwarding message:\n" + error.message
+      }, { quoted: m });
+    }
+    break;
+
+  // අනිත් commands මෙහි add කරන්න
+}
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
