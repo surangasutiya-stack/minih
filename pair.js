@@ -934,6 +934,59 @@ case 'chr': {
 }
 break;
 
+// 📰 Auto News Case Example with "POWERED BY ZANTA-XMD MINI"
+
+const newsAPIs = [
+  "https://api.srihub.store/news/derana?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
+  "https://api.srihub.store/news/lankadeepa?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
+  "https://api.srihub.store/news/itn?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
+  "https://api.srihub.store/news/lnw?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
+  "https://api.srihub.store/news/sirasa?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
+  "https://api.srihub.store/news/hiru?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
+  "https://api.srihub.store/news/bbc?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
+  "https://api.srihub.store/news/dasathalanka?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK",
+  "https://api.srihub.store/news/siyatha?apikey=dew_HFHK1BMLQLKAKmm3QfE5oIKEWwFFIUwX4zwBeEDK"
+];
+
+let newsIntervals = {};
+
+switch(command) {
+
+  case 'startnews': {
+    if (newsIntervals[from]) return conn.sendMessage(from, { text: "*🛑 News is already running in this chat!*" });
+
+    conn.sendMessage(from, { text: "*📰 Auto news started!*" });
+
+    newsIntervals[from] = setInterval(async () => {
+      try {
+        const apiUrl = newsAPIs[Math.floor(Math.random() * newsAPIs.length)];
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+
+        if (data && data.length > 0) {
+          const news = data[Math.floor(Math.random() * data.length)];
+          let message = `*${news.title}*\n\n${news.desc || ""}\n\n${news.link || ""}\n\n*POWERED BY ZANTA-XMD MINI*`;
+          conn.sendMessage(from, { text: message });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 60000);
+    break;
+  }
+
+  case 'stopnews': {
+    if (!newsIntervals[from]) return conn.sendMessage(from, { text: "*⚠️ No auto news running in this chat!*" });
+
+    clearInterval(newsIntervals[from]);
+    delete newsIntervals[from];
+    conn.sendMessage(from, { text: "*🛑 Auto news stopped!*" });
+    break;
+  }
+
+  // 💡 Add other commands here...
+}
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
