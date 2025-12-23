@@ -1232,8 +1232,6 @@ END:VCARD`
 }
 
 case 'csend': {
-    const yts = require('yt-search');
-    const axios = require('axios');
 
     const args = (msg.message?.conversation || '').trim().split(',');
     if (args.length < 2) {
