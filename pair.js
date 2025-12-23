@@ -825,6 +825,70 @@ case 'facke': {
 }
 break;
 
+case "tagall": {
+  if (!m.isGroup) return reply("*❌ මෙය group එකක් නොවේ !*")
+
+  try {
+    // 📋 Group data
+    const groupMetadata = await conn.groupMetadata(from)
+    const members = groupMetadata.participants
+    const groupName = groupMetadata.subject
+
+    // 🎲 Random emoji (එක emoji එකක්)
+    const emojis = [
+      "🩷","❤️","🧡","💛","💚","🩵","💙","💜",
+      "🖤","🩶","🤍","🤎","❤️‍🔥","❤️‍🩹","💓","💖","💝"
+    ]
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)]
+
+    // 💬 User message
+    const userMsg = q ? q : "💫 *Group Members:*"
+
+    // 👥 Build tag message
+    let text = `🎀 *Group Name:* ${groupName}\n\n${userMsg}\n\n`
+    for (let mem of members) {
+      text += `${emoji} @${mem.id.split("@")[0]}\n`
+    }
+
+    // 🖼️ Group DP (fallback)
+    let ppg
+    try {
+      ppg = await conn.profilePictureUrl(from, "image")
+    } catch {
+      ppg = "https://files.catbox.moe/6gw46a.jpg"
+    }
+
+    // 📩 Send tag message
+    await conn.sendMessage(
+      from,
+      {
+        image: { url: ppg },
+        caption: text,
+        mentions: members.map(u => u.id),
+      },
+      { quoted: mek }
+    )
+
+    // ⏳ Delay
+    await new Promise(res => setTimeout(res, 1500))
+
+    // 🎵 Send music
+    await conn.sendMessage(
+      from,
+      {
+        audio: { url: "https://files.catbox.moe/of5voa.mp3" },
+        mimetype: "audio/mp4",
+        ptt: false,
+      },
+      { quoted: mek }
+    )
+
+  } catch (err) {
+    console.log(err)
+    reply("*❌ Tagall3 error!*")
+  }
+}
+break
 
 // ====================== Button Handler ======================
 default: {
