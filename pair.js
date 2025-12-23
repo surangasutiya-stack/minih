@@ -997,10 +997,6 @@ case "updatebio1": {
 }
 break;
 
-// ===================================================
-
-}
-
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
