@@ -878,6 +878,83 @@ END:VCARD`
     break;
 }
 
+case 'song2': {
+    try {
+        // Get the query text
+        const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || '').trim();
+        const q = text.split(" ").slice(1).join(" ").trim();
+
+        if (!q) {
+            return await socket.sendMessage(sender, { 
+                text: '*🚫 Please enter a song name or YouTube link.*',
+                buttons: [
+                    { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: '📋 MENU' }, type: 1 }
+                ]
+            });
+        }
+
+        // Call Nekolabs API
+        const apiUrl = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(q)}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (!data.status || !data.result) {
+            return await socket.sendMessage(sender, { 
+                text: '*❌ No results found or API error.*',
+                buttons: [
+                    { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: '📋 MENU' }, type: 1 }
+                ]
+            });
+        }
+
+        const { title, channel, duration, cover, url } = data.result.metadata;
+        const downloadUrl = data.result.downloadUrl;
+
+        const captionMessage = `
+🎵 *Song Info*
+📝 Title: ${title}
+📺 Channel: ${channel}
+⏱️ Duration: ${duration}
+🔗 URL: ${url}
+`;
+
+        // Send song thumbnail + info
+        await socket.sendMessage(sender, {
+            image: { url: cover },
+            caption: captionMessage,
+            buttons: [
+                { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: '📋 MENU' }, type: 1 },
+                { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: '🤖 BOT INFO' }, type: 1 }
+            ]
+        });
+
+        // Send audio
+        await socket.sendMessage(sender, {
+            audio: { url: downloadUrl },
+            mimetype: 'audio/mpeg',
+            ptt: true
+        });
+
+        // Optionally send as document
+        await socket.sendMessage(sender, {
+            document: { url: downloadUrl },
+            mimetype: "audio/mpeg",
+            fileName: `${title}.mp3`,
+            caption: captionMessage
+        });
+
+    } catch (err) {
+        console.error(err);
+        await socket.sendMessage(sender, { 
+            text: '*❌ Internal Error. Please try again later.*',
+            buttons: [
+                { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: '📋 MENU' }, type: 1 }
+            ]
+        });
+    }
+    break;
+}
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
