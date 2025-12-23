@@ -652,6 +652,96 @@ function setupCommandHandlers(socket, number) {
                         quoted: msg
                     });
                     break;
+
+case 'invite': {
+  if (!m.isGroup) return reply("*😅 මෙය group එකක් නොවේ!*")
+
+  try {
+    // ⏳ Loading message
+    const load = await conn.sendMessage(
+      from,
+      { text: "💫 *ZANTA-XMD bot group info load කරමින්...* ⏳" },
+      { quoted: m }
+    )
+
+    // 🧠 Group metadata
+    const metadata = await conn.groupMetadata(from)
+    const code = await conn.groupInviteCode(from)
+    const link = `https://chat.whatsapp.com/${code}`
+
+    const name = metadata.subject || "N/A"
+    const owner = metadata.owner
+      ? "@" + metadata.owner.split('@')[0]
+      : "Unknown"
+    const desc = metadata.desc || "📝 විස්තරයක් නොමැත"
+    const created = moment(metadata.creation * 1000)
+      .tz('Asia/Colombo')
+      .format('YYYY-MM-DD HH:mm:ss')
+    const members = metadata.participants.length
+
+    // 🖼️ Group DP
+    let pfp
+    try {
+      pfp = await conn.profilePictureUrl(from, 'image')
+    } catch {
+      pfp = "https://telegra.ph/file/cc2f13cc56b91f37d713e.jpg"
+    }
+
+    // 💞 Caption (Sinhala Premium Style)
+    const caption = `
+💞━━━❰ *ZANTA-XMD GROUP DETAILS* ❱━━━💞
+
+✨ *📛 නම:* ${name}
+👑 *Owner:* ${owner}
+👥 *සාමාජිකයින්:* ${members}
+🕐 *සාදන ලද්දේ:* ${created}
+
+💫 *🔗 Invite Link:*  
+${link}
+
+💌 *🗒️ විස්තරය:*  
+${desc}
+
+💖━━━❰ *⚠️ විශ්වාසවන්ත අය සමඟ පමණක් බෙදාගන්න!* ❱━━━💖
+`
+
+    // 🗑️ Delete loading msg
+    await conn.sendMessage(from, { delete: load.key })
+
+    // 📸 Send group image + info
+    await conn.sendMessage(
+      from,
+      {
+        image: { url: pfp },
+        caption: caption,
+        mentions: [
+          ...(metadata.owner ? [metadata.owner] : []),
+          ...metadata.participants.map(p => p.id)
+        ]
+      },
+      { quoted: m }
+    )
+
+    // ⏳ Delay
+    await new Promise(res => setTimeout(res, 3000))
+
+    // 🎧 Auto music
+    await conn.sendMessage(
+      from,
+      {
+        audio: { url: "https://files.catbox.moe/tp2jd8.mp3" },
+        mimetype: "audio/mp4",
+        ptt: false
+      },
+      { quoted: m }
+    )
+
+  } catch (err) {
+    console.error(err)
+    reply("❌ *Group විස්තර ලබා ගැනීමට නොහැක. Bot admin ද කියලා බලන්න!*")
+  }
+}
+break
                     }
                 // ====================== Facebook Downloader ======================
 case 'fb': {
