@@ -43,22 +43,22 @@ const config = {
     GROUP_INVITE_LINK: 'https://chat.whatsapp.com/H9UR6OYceaAArmHi3x1tYK',
     ADMIN_LIST_PATH: './admin.json',
     IMAGE_PATH: 'https://files.catbox.moe/pwg89y.jpg',
-    NEWSLETTER_JID: '120363395674230271@newsletter',
+    NEWSLETTER_JID: '120363405496968264@newsletter',
     NEWSLETTER_MESSAGE_ID: '428',
     OTP_EXPIRY: 300000,
     NEWS_JSON_URL: '',
     BOT_NAME: '',
-    OWNER_NAME: '@Hashuu',
-    OWNER_NUMBER: '94716042889',
-    BOT_VERSION: '2.0.0',
-    BOT_FOOTER: '> © POWERED BY NECO MINI',
+    OWNER_NAME: '@SURANGA CHAMITH OFC',
+    OWNER_NUMBER: '94771657914',
+    BOT_VERSION: '1.0.0',
+    BOT_FOOTER: '> © POWERED BY ZANTA MINI',
     CHANNEL_LINK: 'https://whatsapp.com/channel/0029VbBWWoBJpe8ou0f4yG1g',
     BUTTON_IMAGES: {
-        ALIVE: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
-        MENU: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
-        OWNER: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
-        SONG: 'https://i.ibb.co/Kjq97rcG/3575.jpg',
-        VIDEO: 'https://i.ibb.co/Kjq97rcG/3575.jpg'
+        ALIVE: 'https://files.catbox.moe/pwg89y.jpg'',
+        MENU: 'https://files.catbox.moe/pwg89y.jpg'',
+        OWNER: 'https://files.catbox.moe/pwg89y.jpg'',
+        SONG: 'https://files.catbox.moe/pwg89y.jpg'',
+        VIDEO: 'https://files.catbox.moe/pwg89y.jpg''
     }
 };
 const { MongoClient } = require('mongodb');
