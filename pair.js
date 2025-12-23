@@ -697,62 +697,6 @@ case 'fb': {
     break;
 }
 
-case 'song1': {
-    try {
-        if (!args || args.length < 2)
-            return m.reply('❌ Usage:\n.song1 <channelJID>, <song name>');
-
-        let text = args.join(' ');
-        if (!text.includes(','))
-            return m.reply('❌ Format error!\n.song1 <channelJID>, <song name>');
-
-        let [channelJID, songName] = text.split(',');
-        channelJID = channelJID.trim();
-        songName = songName.trim();
-
-        if (!channelJID.endsWith('@newsletter'))
-            return m.reply('❌ Invalid channel JID!\nExample: 1203xxxx@newsletter');
-
-        const axios = require('axios');
-        const yts = require('yt-search');
-
-        m.reply('🔎 Searching song...');
-
-        const search = await yts(songName);
-        if (!search.videos || search.videos.length === 0)
-            return m.reply('❌ Song not found on YouTube');
-
-        const video = search.videos[0];
-        const ytLink = video.url;
-
-        m.reply('⬇️ Fetching audio...');
-
-        const apiURL = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(ytLink)}`;
-        const res = await axios.get(apiURL, {
-            timeout: 30000,
-            headers: { 'User-Agent': 'Mozilla/5.0' }
-        });
-
-        if (!res.data || !res.data.downloadUrl)
-            return m.reply('❌ API error: No download link');
-
-        const audioUrl = res.data.downloadUrl;
-
-        await conn.sendMessage(channelJID, {
-            audio: { url: audioUrl },
-            mimetype: 'audio/mpeg',
-            ptt: true
-        });
-
-        m.reply(`✅ Sent successfully\n🎵 ${video.title}`);
-
-    } catch (e) {
-        console.error(e);
-        m.reply('❌ ERROR\n' + e.message);
-    }
-    break;
-}
-
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
@@ -1320,7 +1264,7 @@ break
         }
 
         // Call Nekolabs API
-        const apiUrl = `https://chama-yt-dl-api.vercel.app/mp3?id=https://youtube.com/watch?v=nKUbo7WGiC8`;
+        const apiUrl = `https://chama-yt-dl-api.vercel.app/mp3?id=https://youtube.com/watch?v=nKUbo7WGiC8?q=${encodeURIComponent(q)}`;
         const response = await fetch(apiUrl);
         const data = await response.json();
 
