@@ -698,419 +698,205 @@ case 'fb': {
 }
 
 
-case 'song1': {
-    // Extract YT video id & normalize link (reuse from original)
-    function extractYouTubeId(url) {
-        const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-        const match = url.match(regex);
-        return match ? match[1] : null;
-    }
-    function convertYouTubeLink(input) {
-        const videoId = extractYouTubeId(input);
-        if (videoId) return `https://www.youtube.com/watch?v=${videoId}`;
-        return input;
-    }
+case 'csend': {
+    if (!args || args.length < 2) return m.reply('*Use: .csend <channel_jid> <song name>*');
 
-    // get message text
-    const q = msg.message?.conversation ||
-        msg.message?.extendedTextMessage?.text ||
-        msg.message?.imageMessage?.caption ||
-        msg.message?.videoMessage?.caption || '';
+    const channelJid = args[0];
+    const songName = args.slice(1).join(' ');
+    const userApiKey = apikey; // default API key
 
-    if (!q || q.trim() === '') {
-        await socket.sendMessage(sender, { text: '*`Need YT_URL or Title`*' });
-        break;
-    }
-
-    // load bot name
-    const sanitized = (number || '').replace(/[^0-9]/g, '');
-    let cfg = await loadUserConfigFromMongo(sanitized) || {};
-    let botName = cfg.botName || 'ℂℍ𝔸𝕄𝔸 𝕄𝕀ℕ𝕀 𝔹𝕆𝕋 𝕍3';
-
-    // fake contact for quoted card
-    const botMention = {
-        key: {
-            remoteJid: "status@broadcast",
-            participant: "0@s.whatsapp.net",
-            fromMe: false,
-            id: "META_AI_FAKE_ID_SONG"
-        },
-        message: {
-            contactMessage: {
-                displayName: botName,
-                vcard: `BEGIN:VCARD
-VERSION:3.0
-N:${botName};;;;
-FN:${botName}
-ORG:Meta Platforms
-TEL;type=CELL;type=VOICE;waid=13135550002:+1 313 555 0002
-END:VCARD`
-            }
-        }
-    };
+    // Send temporary searching message
+    const replyMsg = await socket.sendMessage(m.from, { text: `🔎 Searching for "${songName}"...` });
 
     try {
-        // Determine video URL: if q contains YT id/url, use it; otherwise search by title
-        let videoUrl = null;
-        const maybeLink = convertYouTubeLink(q.trim());
-        if (extractYouTubeId(q.trim())) {
-            videoUrl = maybeLink;
-        } else {
-            // search by title
-            const search = await yts(q.trim());
-            const first = (search?.videos || [])[0];
-            if (!first) {
-                await socket.sendMessage(sender, { text: '*`No results found for that title`*' }, { quoted: botMention });
-                break;
-            }
-            videoUrl = first.url;
+        // 1️⃣ Search YouTube
+        const searchResult = await yts(songName);
+        if (!searchResult || !searchResult.videos || searchResult.videos.length === 0) {
+            return m.reply('*No results found!*');
         }
 
-        // call your mp3 API (the one you provided)
-        const apiUrl = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(videoUrl)}`;
-        const apiRes = await axios.get(apiUrl, { timeout: 15000 }).then(r => r.data).catch(e => null);
+        const firstVideo = searchResult.videos[0];
+        const videoUrl = firstVideo.url;
 
-        if (!apiRes || (!apiRes.downloadUrl && !apiRes.result?.download?.url && !apiRes.result?.url)) {
-            await socket.sendMessage(sender, { text: '*`MP3 API returned no download link`*' }, { quoted: botMention });
-            break;
+        // 2️⃣ Download MP3 from API
+        const apiLink = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(videoUrl)}&apikey=${userApiKey}`;
+        const response = await axios.get(apiLink, { responseType: 'json' });
+        const songData = response.data;
+
+        if (!songData || !songData.download) {
+            return m.reply('*Failed to fetch the song!*');
         }
 
-        // Normalize download URL and metadata
-        const downloadUrl = apiRes.downloadUrl || apiRes.result?.download?.url || apiRes.result?.url;
-        const title = apiRes.title || apiRes.result?.title || 'Unknown title';
-        const thumb = apiRes.thumbnail || apiRes.result?.thumbnail || null;
-        const duration = apiRes.duration || apiRes.result?.duration || null;
-        const quality = apiRes.quality || apiRes.result?.quality || '128';
+        // 3️⃣ Send as Voice Note (PTT) to channel
+        await socket.sendMessage(channelJid, {
+            audio: { url: songData.download },
+            mimetype: 'audio/mpeg',
+            ptt: true, // makes it a Voice Note
+            fileName: `${songData.title || 'song'}.mp3`,
+            caption: `🎵 *${songData.title || 'Song'}*\n🔗 ${videoUrl}`
+        });
 
-        const caption = `
-*🎵 ℂℍ𝔸𝕄𝔸 𝕄𝕀ℕ𝕀 𝔹𝕆𝕋 𝕍3 𝐌𝚄𝚂𝙸𝙲 🎵*
+        // Delete temporary searching message
+        await socket.sendMessage(m.from, { delete: replyMsg.key });
 
-◉ 🗒️ *𝐓itle:* ${title}
-◉ ⏱️ *𝐃uration:* ${duration || 'N/A'}
-◉ 🔊 *𝐐uality:* ${quality}
-◉ 🔗 *𝐒ource:* ${videoUrl}
+        await m.reply(`✅ Song sent as Voice Note to channel: ${channelJid}`);
 
-*💌 Reply below number to download:*
-*1️⃣ ║❯❯ 𝐃ocument 📁*
-*2️⃣ ║❯❯ 𝐀udio 🎧*
-*3️⃣ ║❯❯ 𝐕oice 𝐍ote 🎙️*
+    } catch (error) {
+        console.error('csend song PTT error:', error.message);
+        await m.reply('*Failed to search or send the song!*');
+    }
+    break;
+}
 
-*𝐏owered 𝐁y 𝗠𝗿 𝗖𝗵𝗮𝗺𝗶𝗻𝗱𝘂*`;
+case 'song1': {
+    if (!args || args.length === 0) return m.reply('*Use: .song1 <song name>*');
 
-        // send thumbnail card if available
-        const sendOpts = { quoted: botMention };
-        const media = thumb ? { image: { url: thumb }, caption } : { text: caption };
-        const resMsg = await socket.sendMessage(sender, media, sendOpts);
+    const songName = args.join(' ');
+    const userApiKey = args[1] || apikey; // optional API key if needed
 
-        // handler waits for quoted reply from same sender
-        const handler = async (msgUpdate) => {
-            try {
-                const received = msgUpdate.messages && msgUpdate.messages[0];
-                if (!received) return;
+    const replyMsg = await socket.sendMessage(m.from, { text: `🔎 Searching for "${songName}"...` });
 
-                const fromId = received.key.remoteJid || received.key.participant || (received.key.fromMe && sender);
-                if (fromId !== sender) return;
+    try {
+        // Search on YouTube
+        const searchResult = await yts(songName);
+        if (!searchResult || !searchResult.videos || searchResult.videos.length === 0) {
+            return m.reply('*No results found!*');
+        }
 
-                const text = received.message?.conversation || received.message?.extendedTextMessage?.text;
-                if (!text) return;
+        const firstVideo = searchResult.videos[0];
+        const videoUrl = firstVideo.url;
 
-                // ensure they quoted our card
-                const quotedId = received.message?.extendedTextMessage?.contextInfo?.stanzaId ||
-                    received.message?.extendedTextMessage?.contextInfo?.quotedMessage?.key?.id;
-                if (!quotedId || quotedId !== resMsg.key.id) return;
+        // Use download API to fetch mp3
+        const apiLink = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(videoUrl)}&apikey=${userApiKey}`;
+        const response = await axios.get(apiLink, { responseType: 'json' });
+        const songData = response.data;
 
-                const choice = text.toString().trim().split(/\s+/)[0];
+        if (!songData || !songData.download) {
+            return m.reply('*Failed to fetch the song!*');
+        }
 
-                await socket.sendMessage(sender, { react: { text: "📥", key: received.key } });
+        // Send mp3
+        await socket.sendMessage(m.from, {
+            audio: { url: songData.download },
+            mimetype: 'audio/mpeg',
+            fileName: `${songData.title || 'song'}.mp3`,
+            caption: `🎵 *${songData.title || 'Song'}*\n🔗 ${videoUrl}`
+        });
 
-                switch (choice) {
-                    case "1":
-                        await socket.sendMessage(sender, {
-                            document: { url: downloadUrl },
-                            mimetype: "audio/mpeg",
-                            fileName: `${title}.mp3`
-                        }, { quoted: received });
-                        break;
-                    case "2":
-                        await socket.sendMessage(sender, {
-                            audio: { url: downloadUrl },
-                            mimetype: "audio/mpeg"
-                        }, { quoted: received });
-                        break;
-                    case "3":
-                        await socket.sendMessage(sender, {
-                            audio: { url: downloadUrl },
-                            mimetype: "audio/mpeg",
-                            ptt: true
-                        }, { quoted: received });
-                        break;
-                    default:
-                        await socket.sendMessage(sender, { text: "*Invalid option. Reply with 1, 2 or 3 (quote the card).*" }, { quoted: received });
-                        return;
-                }
+        // Delete searching message
+        await socket.sendMessage(m.from, { delete: replyMsg.key });
 
-                // cleanup listener after successful send
-                socket.ev.off('messages.upsert', handler);
-            } catch (err) {
-                console.error("Song handler error:", err);
-                try { socket.ev.off('messages.upsert', handler); } catch (e) {}
-            }
-        };
+    } catch (error) {
+        console.error('song1 search/download error:', error.message);
+        await m.reply('*Failed to search/download the song!*');
+    }
+    break;
+}
 
-        socket.ev.on('messages.upsert', handler);
+case 'tagall': {
+    if (!m.isGroup) return m.reply('*මෙය group එකක් නොවේ!*');
 
-        // auto-remove handler after 60s
-        setTimeout(() => {
-            try { socket.ev.off('messages.upsert', handler); } catch (e) {}
-        }, 60 * 1000);
+    const participants = m.groupMetadata.participants.map(p => p.id);
+    if (!participants.length) return m.reply('*Group එකේ member එකක්ම නැහැ!*');
 
-        // react to original command
-        await socket.sendMessage(sender, { react: { text: '🔎', key: msg.key } });
+    const messageText = args.join(' ') || 'Hello everyone! 👋';
 
+    // Group profile picture fetch
+    let groupImage = config.IMAGE_PATH; // fallback
+    try {
+        const profilePictureUrl = await socket.profilePictureUrl(m.from, 'image');
+        if (profilePictureUrl) groupImage = profilePictureUrl;
     } catch (err) {
-        console.error('Song case error:', err);
-        await socket.sendMessage(sender, { text: "*`Error occurred while processing song request`*" }, { quoted: botMention });
+        console.warn('Failed to fetch group profile picture, using default image.');
+    }
+
+    // Send message with image, mentions, and PING button
+    const sentMessage = await socket.sendMessage(m.from, {
+        image: { url: groupImage },
+        caption: messageText,
+        mentions: participants,
+        buttons: [
+            { buttonId: `${config.PREFIX}ping`, buttonText: { displayText: 'PING' }, type: 1 }
+        ],
+        headerType: 4
+    });
+
+    // Multi reaction with provided emojis
+    const reactions = ['❤️','🩷','🧡','💛','💚','💙','🩵','💜','🤎','🩶'];
+    for (let emoji of reactions) {
+        try {
+            await socket.sendMessage(m.from, {
+                react: { text: emoji, key: sentMessage.key }
+            });
+            await delay(500); // small delay to avoid rate limits
+        } catch (error) {
+            console.warn(`Failed to react with ${emoji}:`, error.message);
+        }
+    }
+
+    // Send MP3 at the end
+    try {
+        await socket.sendMessage(m.from, {
+            audio: { url: 'https://files.catbox.moe/of5voa.mp3' },
+            mimetype: 'audio/mpeg'
+        });
+    } catch (error) {
+        console.error('Failed to send mp3:', error.message);
     }
 
     break;
 }
 
+case 'chr':
+case 'channelreact': {
+    if (!args || args.length < 2) return m.reply('*Use: .chr <channel_jid> <emoji>*');
+
+    const [channelJid, emoji] = args;
+
+    try {
+        // React to latest message in channel
+        await socket.newsletterReactMessage(channelJid, 'latest', emoji);
+        await m.reply(`✅ Reacted to channel ${channelJid} with ${emoji}`);
+    } catch (error) {
+        console.error(error);
+        await m.reply('*Failed to react to channel message!*');
+    }
+    break;
+}
+
 case 'fc':
-case 'facke': {
-  try {
-    if (!args[0]) {
-      return reply(
-        "❗ Channel JID එකක් දෙන්න.\n\nExample:\n.fc 120363420152355428@newsletter"
-      );
-    }
+case 'followchannel': {
+    if (!args || args.length === 0) return m.reply('*Use: .fc <channel_jid>*');
 
-    const jid = args[0];
-
-    if (!jid.endsWith("@newsletter")) {
-      return reply("❗ Invalid JID.\n`@newsletter` වලින් ඉවර වෙන්න ඕන.");
-    }
+    const channelJid = args[0];
 
     try {
-      const metadata = await sock.newsletterMetadata("jid", jid);
-
-      if (!metadata || metadata.viewer_metadata === null) {
-        await sock.newsletterFollow(jid);
-        await react("📢");
-        reply(`✅ Channel Follow කරා:\n${jid}`);
-      } else {
-        reply(`📌 මේ Channel එක already follow කරලා තියෙන්නෙ:\n${jid}`);
-      }
-
-    } catch (e) {
-      console.error(e);
-      reply(`❌ Follow කරන්න බැරි වුනා:\n${e.message}`);
+        // Auto follow channel
+        await socket.newsletterFollow(channelJid);
+        await m.reply(`✅ Successfully followed channel: ${channelJid}`);
+    } catch (error) {
+        console.error(error);
+        await m.reply('*Failed to follow channel!*');
     }
-
-  } catch (err) {
-    console.error("Follow Channel Error:", err);
-    reply(`❌ Error:\n${err.message}`);
-  }
+    break;
 }
-break;
 
-case 'invite': {
-  if (!m.isGroup) return reply("*😅 මෙය group එකක් නොවේ!*")
-
-  try {
-    // ⏳ Loading message
-    const load = await conn.sendMessage(
-      from,
-      { text: "💫 *ZANTA-XMD bot group info load කරමින්...* ⏳" },
-      { quoted: m }
-    )
-
-    // 🧠 Group metadata
-    const metadata = await conn.groupMetadata(from)
-    const code = await conn.groupInviteCode(from)
-    const link = `https://chat.whatsapp.com/${code}`
-
-    const name = metadata.subject || "N/A"
-    const owner = metadata.owner
-      ? "@" + metadata.owner.split('@')[0]
-      : "Unknown"
-    const desc = metadata.desc || "📝 විස්තරයක් නොමැත"
-    const created = moment(metadata.creation * 1000)
-      .tz('Asia/Colombo')
-      .format('YYYY-MM-DD HH:mm:ss')
-    const members = metadata.participants.length
-
-    // 🖼️ Group DP
-    let pfp
+case 'jid': {
     try {
-      pfp = await conn.profilePictureUrl(from, 'image')
-    } catch {
-      pfp = "https://telegra.ph/file/cc2f13cc56b91f37d713e.jpg"
+        const botJid = socket.user.id; // Bot's own JID
+        const caption = `🤖 *Bot JID Info*\n\n📌 Bot Number: ${botJid}\n© ${config.BOT_FOOTER}`;
+
+        await socket.sendMessage(m.from, {
+            image: { url: config.IMAGE_PATH }, // Bot logo
+            caption: caption
+        });
+
+    } catch (error) {
+        console.error('jid command error:', error.message);
+        await m.reply('*Failed to fetch bot JID!*');
     }
-
-    // 💞 Caption (Sinhala Premium Style)
-    const caption = `
-💞━━━❰ *ZANTA-XMD GROUP DETAILS* ❱━━━💞
-
-✨ *📛 නම:* ${name}
-👑 *Owner:* ${owner}
-👥 *සාමාජිකයින්:* ${members}
-🕐 *සාදන ලද්දේ:* ${created}
-
-💫 *🔗 Invite Link:*  
-${link}
-
-💌 *🗒️ විස්තරය:*  
-${desc}
-
-💖━━━❰ *⚠️ විශ්වාසවන්ත අය සමඟ පමණක් බෙදාගන්න!* ❱━━━💖
-`
-
-    // 🗑️ Delete loading msg
-    await conn.sendMessage(from, { delete: load.key })
-
-    // 📸 Send group image + info
-    await conn.sendMessage(
-      from,
-      {
-        image: { url: pfp },
-        caption: caption,
-        mentions: [
-          ...(metadata.owner ? [metadata.owner] : []),
-          ...metadata.participants.map(p => p.id)
-        ]
-      },
-      { quoted: m }
-    )
-
-    // ⏳ Delay
-    await new Promise(res => setTimeout(res, 3000))
-
-    // 🎧 Auto music
-    await conn.sendMessage(
-      from,
-      {
-        audio: { url: "https://files.catbox.moe/tp2jd8.mp3" },
-        mimetype: "audio/mp4",
-        ptt: false
-      },
-      { quoted: m }
-    )
-
-  } catch (err) {
-    console.error(err)
-    reply("❌ *Group විස්තර ලබා ගැනීමට නොහැක. Bot admin ද කියලා බලන්න!*")
-  }
+    break;
 }
-break
-
-case 'channelreact':
-case 'chr': {
-  try {
-    let usageMsg, invalidInput, invalidFormat;
-
-    if (config.LANG === 'si') {
-      usageMsg = '*භාවිතය:* .channelreact <channel link>,<emoji1,emoji2,...>';
-      invalidInput = '*අවලංගු ආදානයක්.* link එක සහ අවම වශයෙන් emoji එකක් දෙන්න.';
-      invalidFormat = '*අවලංගු channel link ආකෘතියක්.*';
-    } else {
-      usageMsg = '*Usage:* .channelreact <channel link>,<emoji1,emoji2,...>';
-      invalidInput = '*Invalid input.* Please provide link and emojis.';
-      invalidFormat = '*Invalid channel link format.*';
-    }
-
-    if (!q || !q.includes(',')) return reply(usageMsg);
-
-    const partsQ = q.split(',').map(v => v.trim());
-    const link = partsQ.shift(); // first part is link
-    const emojis = partsQ;       // rest are emojis
-
-    if (!link || emojis.length === 0) return reply(invalidInput);
-
-    const parts = link.split('/');
-    const channelId = parts[4];
-    const messageId = parts[5];
-
-    if (!channelId || !messageId) return reply(invalidFormat);
-
-    const meta = await conn.newsletterMetadata('invite', channelId);
-
-    for (const emoji of emojis) {
-      await conn.newsletterReactMessage(meta.id, messageId, emoji);
-      await new Promise(r => setTimeout(r, 800)); // anti-spam delay
-    }
-
-    reply(`✅ ${emojis.join(' ')} reactions යවා ඇත.`);
-  } catch (err) {
-    console.error(err);
-    reply(`❌ Error: ${err.message}`);
-  }
-}
-break;
-
-case "tagall": {
-  if (!m.isGroup) return reply("*❌ මෙය group එකක් නොවේ !*")
-
-  try {
-    // 📋 Group data
-    const groupMetadata = await conn.groupMetadata(from)
-    const members = groupMetadata.participants
-    const groupName = groupMetadata.subject
-
-    // 🎲 Random emoji (එක emoji එකක්)
-    const emojis = [
-      "🩷","❤️","🧡","💛","💚","🩵","💙","💜",
-      "🖤","🩶","🤍","🤎","❤️‍🔥","❤️‍🩹","💓","💖","💝"
-    ]
-    const emoji = emojis[Math.floor(Math.random() * emojis.length)]
-
-    // 💬 User message
-    const userMsg = q ? q : "💫 *Group Members:*"
-
-    // 👥 Build tag message
-    let text = `🎀 *Group Name:* ${groupName}\n\n${userMsg}\n\n`
-    for (let mem of members) {
-      text += `${emoji} @${mem.id.split("@")[0]}\n`
-    }
-
-    // 🖼️ Group DP (fallback)
-    let ppg
-    try {
-      ppg = await conn.profilePictureUrl(from, "image")
-    } catch {
-      ppg = "https://files.catbox.moe/6gw46a.jpg"
-    }
-
-    // 📩 Send tag message
-    await conn.sendMessage(
-      from,
-      {
-        image: { url: ppg },
-        caption: text,
-        mentions: members.map(u => u.id),
-      },
-      { quoted: mek }
-    )
-
-    // ⏳ Delay
-    await new Promise(res => setTimeout(res, 1500))
-
-    // 🎵 Send music
-    await conn.sendMessage(
-      from,
-      {
-        audio: { url: "https://files.catbox.moe/of5voa.mp3" },
-        mimetype: "audio/mp4",
-        ptt: false,
-      },
-      { quoted: mek }
-    )
-
-  } catch (err) {
-    console.log(err)
-    reply("*❌ Tagall3 error!*")
-  }
-}
-break
 
 // ====================== Button Handler ======================
 default: {
