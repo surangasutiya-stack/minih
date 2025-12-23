@@ -1264,7 +1264,7 @@ break
         }
 
         // Call Nekolabs API
-        const apiUrl = `https://api.srihub.store/download/ytmp3?apikey=dew_O6lrFlmdzzKGVyspCKWZhVprxLLhGlFEjzUmkEpA&url=https%3A%2F%2Fyoutu.be%2FajdRPlWnuUM%3Fsi%3DeO5_cnVYLb9jzgaa?q=${encodeURIComponent(q)}`;
+        const apiUrl = `https://api.nekolabs.my.id/downloader/youtube/play/v1?q=${encodeURIComponent(q)}`;
         const response = await fetch(apiUrl);
         const data = await response.json();
 
