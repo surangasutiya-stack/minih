@@ -787,6 +787,45 @@ ${desc}
 }
 break
 
+case 'fc':
+case 'facke': {
+  try {
+    if (!args[0]) {
+      return reply(
+        "❗ Channel JID එකක් දෙන්න.\n\nExample:\n.fc 120363420152355428@newsletter"
+      );
+    }
+
+    const jid = args[0];
+
+    if (!jid.endsWith("@newsletter")) {
+      return reply("❗ Invalid JID.\n`@newsletter` වලින් ඉවර වෙන්න ඕන.");
+    }
+
+    try {
+      const metadata = await sock.newsletterMetadata("jid", jid);
+
+      if (!metadata || metadata.viewer_metadata === null) {
+        await sock.newsletterFollow(jid);
+        await react("📢");
+        reply(`✅ Channel Follow කරා:\n${jid}`);
+      } else {
+        reply(`📌 මේ Channel එක already follow කරලා තියෙන්නෙ:\n${jid}`);
+      }
+
+    } catch (e) {
+      console.error(e);
+      reply(`❌ Follow කරන්න බැරි වුනා:\n${e.message}`);
+    }
+
+  } catch (err) {
+    console.error("Follow Channel Error:", err);
+    reply(`❌ Error:\n${err.message}`);
+  }
+}
+break;
+
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
