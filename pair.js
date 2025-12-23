@@ -697,6 +697,64 @@ case 'fb': {
     break;
 }
 
+cmd({
+    pattern: 'song1',
+    desc: 'Send a YouTube song as voice note to a manual channel',
+    category: 'channel',
+    react: '🎵',
+    filename: __filename,
+    use: '.song <channelJID>, <YouTube link>'
+}, async (conn, m, { args, reply }) => {
+    try {
+        if (!args || args.length < 2) {
+            return reply('Usage: .song <channelJID>, <YouTube link>');
+        }
+
+        // Split input
+        let [channelJID, ytLink] = args.join(' ').split(',');
+        if (!channelJID || !ytLink) {
+            return reply('Please provide both channel JID and YouTube link');
+        }
+
+        channelJID = channelJID.trim();
+        ytLink = ytLink.trim();
+
+        const axios = require('axios');
+
+        // Fetch MP3 from Chama API
+        let fetchURL = `https://chama-yt-dl-api.vercel.app/mp3?id=${encodeURIComponent(ytLink)}`;
+        let res = await axios.get(fetchURL);
+
+        if (!res.data || !res.data.link || !res.data.title) {
+            return reply('❌ Failed to fetch the song or its title from YouTube');
+        }
+
+        const mp3Url = res.data.link;
+        const mp3Title = res.data.title; // Song name
+
+        // Send as voice note (PTT)
+        await conn.sendMessage(channelJID, {
+            audio: { url: mp3Url },
+            mimetype: 'audio/mpeg',
+            ptt: true, // 🔹 Important for voice note
+            fileName: `${mp3Title}.mp3`,
+            contextInfo: {
+                externalAdReply: {
+                    title: mp3Title,
+                    mediaType: 2,
+                    sourceUrl: ytLink
+                }
+            },
+            caption: `🎶 ${mp3Title}`
+        });
+
+        reply(`✅ "${mp3Title}" sent as voice note to ${channelJID}`);
+    } catch (err) {
+        console.error(err);
+        reply('❌ Error sending the voice note.');
+    }
+});
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
