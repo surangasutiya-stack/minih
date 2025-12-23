@@ -697,8 +697,8 @@ case 'fb': {
     break;
 }
 
-case 'song1': {
 
+case 'song1': {
     // Extract YT video id & normalize link (reuse from original)
     function extractYouTubeId(url) {
         const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
