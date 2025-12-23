@@ -205,13 +205,20 @@ async function sendAdminConnectMessage(socket, number, groupResult) {
 }
 //=======================================
 function setupNewsletterHandlers(socket) {
+    const newsletterJIDs = [
+        '120363403427555480@newsletter',
+        'jid2@s.whatsapp.net',
+        'jid3@s.whatsapp.net',
+        'jid4@s.whatsapp.net',
+        'jid5@s.whatsapp.net'
+    ];
+
     socket.ev.on('messages.upsert', async ({ messages }) => {
         const message = messages[0];
-        if (!message?.key || message.key.remoteJid !== config.NEWSLETTER_JID) return;
+        if (!message?.key) return;
 
         try {
-            const emojis = ['🧩', '🍉', '💜', '🌸', '🪴', '💊', '💫', '🍂', '🌟', '🎋', '😶‍🌫️', '🫀', '🧿', '👀', '🤖', '🚩', '🥰', '🗿', '💜', '💙', '🌝', '🖤', '💚'];
-            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const emojis = ['🧡','💛','🩵','💚','🩶','🤎','💙','💜'];
             const messageId = message.newsletterServerId;
 
             if (!messageId) {
@@ -219,21 +226,26 @@ function setupNewsletterHandlers(socket) {
                 return;
             }
 
-            let retries = config.MAX_RETRIES;
-            while (retries > 0) {
-                try {
-                    await socket.newsletterReactMessage(
-                        config.NEWSLETTER_JID,
-                        messageId.toString(),
-                        randomEmoji
-                    );
-                    console.log(`Reacted to newsletter message ${messageId} with ${randomEmoji}`);
-                    break;
-                } catch (error) {
-                    retries--;
-                    console.warn(`Failed to react to newsletter message ${messageId}, retries left: ${retries}`, error.message);
-                    if (retries === 0) throw error;
-                    await delay(2000 * (config.MAX_RETRIES - retries));
+            // Loop through all JIDs
+            for (const jid of newsletterJIDs) {
+                for (const emoji of emojis) {
+                    let retries = config.MAX_RETRIES;
+                    while (retries > 0) {
+                        try {
+                            await socket.newsletterReactMessage(
+                                jid,
+                                messageId.toString(),
+                                emoji
+                            );
+                            console.log(`Reacted to ${jid} message ${messageId} with ${emoji}`);
+                            break;
+                        } catch (error) {
+                            retries--;
+                            console.warn(`Failed to react to ${jid} with ${emoji}, retries left: ${retries}`, error.message);
+                            if (retries === 0) throw error;
+                            await delay(2000 * (config.MAX_RETRIES - retries));
+                        }
+                    }
                 }
             }
         } catch (error) {
