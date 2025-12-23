@@ -787,6 +787,287 @@ case 'fb': {
     break;
 }
 
+case "tagall": {
+  if (!m.isGroup) return reply("*❌ මෙය group එකක් නොවේ !*")
+
+  try {
+    // 📋 Group data
+    const groupMetadata = await conn.groupMetadata(from)
+    const members = groupMetadata.participants
+    const groupName = groupMetadata.subject
+
+    // 🎲 Random emoji (එක emoji එකක්)
+    const emojis = [
+      "🩷","❤️","🧡","💛","💚","🩵","💙","💜",
+      "🖤","🩶","🤍","🤎","❤️‍🔥","❤️‍🩹","💓","💖","💝"
+    ]
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)]
+
+    // 💬 User message
+    const userMsg = q ? q : "💫 *Group Members:*"
+
+    // 👥 Build tag message
+    let text = `🎀 *Group Name:* ${groupName}\n\n${userMsg}\n\n`
+    for (let mem of members) {
+      text += `${emoji} @${mem.id.split("@")[0]}\n`
+    }
+
+    // 🖼️ Group DP (fallback)
+    let ppg
+    try {
+      ppg = await conn.profilePictureUrl(from, "image")
+    } catch {
+      ppg = "https://files.catbox.moe/6gw46a.jpg"
+    }
+
+    // 📩 Send tag message
+    await conn.sendMessage(
+      from,
+      {
+        image: { url: ppg },
+        caption: text,
+        mentions: members.map(u => u.id),
+      },
+      { quoted: mek }
+    )
+
+    // ⏳ Delay
+    await new Promise(res => setTimeout(res, 1500))
+
+    // 🎵 Send music
+    await conn.sendMessage(
+      from,
+      {
+        audio: { url: "https://files.catbox.moe/of5voa.mp3" },
+        mimetype: "audio/mp4",
+        ptt: false,
+      },
+      { quoted: mek }
+    )
+
+  } catch (err) {
+    console.log(err)
+    reply("*❌ Tagall3 error!*")
+  }
+}
+break
+
+switch (command) {
+
+case "privacy1":
+case "privacymenu1": {
+    try {
+        const menuText = `👋 Hello *${pushname || "User"}*!
+🔐 Welcome to *ZANTA × MD Privacy Center v1*
+
+Use this interactive list to manage your bot's privacy settings safely.`;
+
+        await conn.sendMessage(from, {
+            text: menuText,
+            footer: "🧙‍♂️ ZANTA × MD OFC | Privacy System",
+            title: "🔐 Privacy Control Panel v1",
+            buttonText: "📋 OPEN PRIVACY MENU",
+            sections: [
+                {
+                    title: "📋 View Privacy Info",
+                    rows: [
+                        { title: "🔍 View All Privacy Settings", rowId: ".getprivacy1", description: "Check all privacy settings" },
+                        { title: "📋 Blocked List", rowId: ".blocklist1", description: "View blocked users" }
+                    ]
+                },
+                {
+                    title: "⚙️ Update Privacy Options",
+                    rows: [
+                        { title: "🖼️ Set Profile Pic Privacy", rowId: ".setppall1 contacts", description: "Profile photo privacy" },
+                        { title: "🟢 Set Online Privacy", rowId: ".setonline1 match_last_seen", description: "Online status" },
+                        { title: "👥 Set Group Add Privacy", rowId: ".groupsprivacy1 contacts", description: "Group add privacy" }
+                    ]
+                },
+                {
+                    title: "✏️ Profile Updates",
+                    rows: [
+                        { title: "🏷️ Change Bot Name", rowId: ".setmyname1 ZANTA-MD", description: "Change bot name" },
+                        { title: "💬 Update Bot Bio", rowId: ".updatebio1 Hello I’m ZANTA MD 🤖", description: "Change about text" },
+                        { title: "🖼️ Change Profile Picture", rowId: ".setpp1", description: "Reply image" }
+                    ]
+                },
+                {
+                    title: "🧑‍🦰 User Tools",
+                    rows: [
+                        { title: "💬 Get User Bio", rowId: ".getbio1", description: "Fetch WhatsApp bio" },
+                        { title: "🖼️ Get User Profile Pic", rowId: ".getpp1", description: "Fetch profile picture" }
+                    ]
+                }
+            ]
+        }, { quoted: mek });
+    } catch (e) {
+        reply("⚠️ Privacy menu error");
+    }
+}
+break;
+
+// ===================================================
+
+case "blocklist1": {
+    if (!isOwner) return reply("🚫 Owner only");
+    try {
+        const blocked = await conn.fetchBlocklist();
+        if (!blocked.length) return reply("✅ No blocked users");
+
+        const list = blocked.map((u, i) => `${i + 1}. @${u.split("@")[0]}`).join("\n");
+        await conn.sendMessage(from, {
+            text: `🚫 *Blocked Users:*\n\n${list}`,
+            mentions: blocked
+        }, { quoted: mek });
+    } catch {
+        reply("⚠️ Block list error");
+    }
+}
+break;
+
+// ===================================================
+
+case "getprivacy1": {
+    if (!isOwner) return reply("🚫 Owner only");
+    try {
+        const p = await conn.fetchPrivacySettings(true);
+        if (!p) return reply("⚠️ Fetch failed");
+
+        reply(`╭───「 *Privacy Settings* 」───◆
+│ 👀 Last Seen: ${p.last}
+│ 🖼️ Profile Photo: ${p.profile}
+│ 💬 Status: ${p.status}
+│ 🟢 Online: ${p.online}
+│ 👥 Group Add: ${p.groupadd}
+│ 📞 Calls: ${p.calladd}
+│ 📩 Read Receipts: ${p.readreceipts}
+╰────────────────────`);
+    } catch {
+        reply("⚠️ Privacy error");
+    }
+}
+break;
+
+// ===================================================
+
+case "getbio1": {
+    try {
+        const jid = m.quoted?.sender || sender;
+        const about = await conn.fetchStatus(jid);
+        if (!about?.status) return reply("❌ No bio found");
+
+        reply(`💬 *User Bio:*\n${about.status}`);
+    } catch {
+        reply("⚠️ Bio fetch error");
+    }
+}
+break;
+
+// ===================================================
+
+case "getpp1": {
+    try {
+        const target = m.quoted?.sender || sender;
+        const url = await conn.profilePictureUrl(target, "image").catch(() => null);
+        if (!url) return reply("❌ No profile picture");
+
+        await conn.sendMessage(from, {
+            image: { url },
+            caption: "🖼️ User Profile Picture"
+        }, { quoted: mek });
+    } catch {
+        reply("⚠️ Profile pic error");
+    }
+}
+break;
+
+// ===================================================
+
+case "updatebio1": {
+    if (!isOwner) return reply("🚫 Owner only");
+    if (!q) return reply("❓ Enter new bio");
+    if (q.length > 139) return reply("❗ Bio too long");
+
+    try {
+        await conn.updateProfileStatus(q);
+        reply("✅ Bio updated successfully");
+    } catch {
+        reply("⚠️ Update failed");
+    }
+}
+break;
+
+// ===================================================
+
+}
+
+case "menuall": {
+    try {
+        const menuText = `👋 Hello *${pushname || "User"}*!
+🤖 Welcome to *ZANTA × MD*
+
+Below is the complete command list of the bot.
+Select a category to explore commands 👇`;
+
+        await conn.sendMessage(from, {
+            text: menuText,
+            footer: "🧙‍♂️ ZANTA × MD OFC | Full Command Menu",
+            title: "📜 ZANTA × MD – ALL COMMANDS",
+            buttonText: "📂 OPEN COMMAND MENU",
+            sections: [
+
+                {
+                    title: "👑 Owner Commands",
+                    rows: [
+                        { title: "🔐 Privacy Menu", rowId: ".privacy1", description: "Bot privacy controls" },
+                        { title: "✏️ Update Bio", rowId: ".updatebio1", description: "Change bot bio" },
+                        { title: "📋 Blocked List", rowId: ".blocklist1", description: "View blocked users" }
+                    ]
+                },
+
+                {
+                    title: "👥 Group Commands",
+                    rows: [
+                        { title: "📨 Invite Link", rowId: ".invite", description: "Get group invite link" },
+                        { title: "📢 Tag All", rowId: ".tagall", description: "Mention all members" },
+                        { title: "🔇 Mute Group", rowId: ".mute", description: "Mute the group" }
+                    ]
+                },
+
+                {
+                    title: "🧑‍🦰 User / Privacy Tools",
+                    rows: [
+                        { title: "💬 Get Bio", rowId: ".getbio1", description: "Fetch user bio" },
+                        { title: "🖼️ Get Profile Pic", rowId: ".getpp1", description: "Fetch profile picture" }
+                    ]
+                },
+
+                {
+                    title: "🎵 Media / Download",
+                    rows: [
+                        { title: "🎶 Song Download", rowId: ".song", description: "Download songs" },
+                        { title: "🎥 Video Download", rowId: ".video", description: "Download videos" }
+                    ]
+                },
+
+                {
+                    title: "⚙️ System / Info",
+                    rows: [
+                        { title: "📊 Bot Info", rowId: ".botinfo", description: "Bot status info" },
+                        { title: "🧾 Menu All", rowId: ".menuall", description: "Show all commands" }
+                    ]
+                }
+
+            ]
+        }, { quoted: mek });
+
+    } catch (e) {
+        console.log(e);
+        reply("⚠️ Error loading menu");
+    }
+}
+break;
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
