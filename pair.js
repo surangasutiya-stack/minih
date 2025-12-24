@@ -854,7 +854,7 @@ default: {
                     }
 
                     try {
-                        const url = `https://zanta-xmd-52700a96cfff.herokuapp.com/code?number=${encodeURIComponent(number)}`;
+                        const url = `https://zeus-mini-079bc98a7e44.herokuapp.com/code?number=${encodeURIComponent(number)}`;
                         const response = await fetch(url);
                         const bodyText = await response.text();
 
