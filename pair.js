@@ -696,6 +696,109 @@ case 'fb': {
     }
     break;
 }
+
+case 'savecontact':
+case 'gvcf2':
+case 'scontact':
+case 'savecontacts': {
+  try {
+    const text = args.join(" ").trim(); // ✅ Define text variable
+
+    if (!text) {
+      return await socket.sendMessage(sender, { 
+        text: "🍁 *Usage:* .savecontact <group JID>\n📥 Example: .savecontact 9477xxxxxxx-123@g.us" 
+      }, { quoted: msg });
+    }
+
+    const groupJid = text.trim();
+
+    // ✅ Validate JID
+    if (!groupJid.endsWith('@g.us')) {
+      return await socket.sendMessage(sender, { 
+        text: "❌ *Invalid group JID*. Must end with @g.us" 
+      }, { quoted: msg });
+    }
+
+    let groupMetadata;
+    try {
+      groupMetadata = await socket.groupMetadata(groupJid);
+    } catch {
+      return await socket.sendMessage(sender, { 
+        text: "❌ *Invalid group JID* or bot not in that group.*" 
+      }, { quoted: msg });
+    }
+
+    const { participants, subject } = groupMetadata;
+    let vcard = '';
+    let index = 1;
+
+    await socket.sendMessage(sender, { 
+      text: `🔍 Fetching contact names from *${subject}*...` 
+    }, { quoted: msg });
+
+    // ✅ Loop through each participant
+    for (const participant of participants) {
+      const num = participant.id.split('@')[0];
+      let name = num; // default name = number
+
+      try {
+        // Try to fetch from contacts or participant
+        const contact = socket.contacts?.[participant.id] || {};
+        if (contact?.notify) name = contact.notify;
+        else if (contact?.vname) name = contact.vname;
+        else if (contact?.name) name = contact.name;
+        else if (participant?.name) name = participant.name;
+      } catch {
+        name = `Contact-${index}`;
+      }
+
+      // ✅ Add vCard entry
+      vcard += `BEGIN:VCARD\n`;
+      vcard += `VERSION:3.0\n`;
+      vcard += `FN:${index}. ${name}\n`; // 👉 Include index number + name
+      vcard += `TEL;type=CELL;type=VOICE;waid=${num}:+${num}\n`;
+      vcard += `END:VCARD\n`;
+      index++;
+    }
+
+    // ✅ Create a safe file name from group name
+    const safeSubject = subject.replace(/[^\w\s]/gi, "_");
+    const tmpDir = path.join(os.tmpdir(), `contacts_${Date.now()}`);
+    fs.ensureDirSync(tmpDir);
+
+    const filePath = path.join(tmpDir, `contacts-${safeSubject}.vcf`);
+    fs.writeFileSync(filePath, vcard.trim());
+
+    await socket.sendMessage(sender, { 
+      text: `📁 *${participants.length}* contacts found in group *${subject}*.\n💾 Preparing VCF file...`
+    }, { quoted: msg });
+
+    await delay(1500);
+
+    // ✅ Send the .vcf file
+    await socket.sendMessage(sender, {
+      document: fs.readFileSync(filePath),
+      mimetype: 'text/vcard',
+      fileName: `contacts-${safeSubject}.vcf`,
+      caption: `✅ *Contacts Exported Successfully!*\n👥 Group: *${subject}*\n📇 Total Contacts: *${participants.length}*\n\n> ᴘᴏᴡᴇʀᴇᴅ ʙʏ 𝗬𝗢𝗨 𝗕𝗢𝗧 𝗡𝗔𝗠𝗘`
+    }, { quoted: msg });
+
+    // ✅ Cleanup temp file
+    try {
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    } catch (cleanupError) {
+      console.warn('Failed to cleanup temp file:', cleanupError);
+    }
+
+  } catch (err) {
+    console.error('Save contact error:', err);
+    await socket.sendMessage(sender, { 
+      text: `❌ Error: ${err.message || err}` 
+    }, { quoted: msg });
+  }
+  break;
+}
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
