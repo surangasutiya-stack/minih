@@ -697,22 +697,23 @@ case 'fb': {
     break;
 }
 
+// ==========================
+// 1️⃣ Owner-only .tagall command
+// ==========================
 case 'tagall': {
-    // Check if the message is in a group
     if (!m.isGroup) return m.reply('❌ මේක group එකක පමණයි වැඩ කරන එක.');
 
-    // Check if sender is the bot owner
-    const ownerJid = ['owner-number@s.whatsapp.net']; // 👈 මෙහි ඔබගේ WhatsApp JID එක දාන්න
+    // Owner list
+    const ownerJid = ['owner-number@s.whatsapp.net'];
     if (!ownerJid.includes(m.sender)) return m.reply('❌ මේක owner ටම වැඩ කරන command එකක්.');
 
-    // Get text to send
-    let text = args.join(' ') || '👋 Hello Everyone!';
+    // Ensure connection is open
+    if (conn.ws.readyState !== 1) return m.reply('⚠️ Bot not connected. Try again later.');
 
-    // Get group members
+    let text = args.join(' ') || '👋 Hello Everyone!';
     let groupMetadata = await conn.groupMetadata(m.chat);
     let members = groupMetadata.participants.map(u => u.id);
 
-    // Send message with mentions
     await conn.sendMessage(
         m.chat,
         { text: text, mentions: members },
@@ -720,6 +721,35 @@ case 'tagall': {
     );
 }
 break;
+
+// ==========================
+// 2️⃣ Newsletter / broadcast safe send
+// ==========================
+async function safeSendMessage(chatId, messageContent, quotedMessage = null) {
+    if (conn.ws.readyState !== 1) {
+        console.log('⚠️ Cannot send message, connection closed.');
+        return;
+    }
+    try {
+        await conn.sendMessage(chatId, messageContent, { quoted: quotedMessage });
+    } catch (err) {
+        console.error('❌ Failed to send message:', err.message);
+        // Optionally retry after delay
+        setTimeout(() => safeSendMessage(chatId, messageContent, quotedMessage), 3000);
+    }
+}
+
+// ==========================
+// 3️⃣ Connection update listener (auto-reconnect logging)
+// ==========================
+conn.ev.on('connection.update', (update) => {
+    const { connection, lastDisconnect } = update;
+    if (connection === 'close') {
+        console.log('🔌 Connection closed, attempting reconnect...', lastDisconnect?.error);
+    } else if (connection === 'open') {
+        console.log('✅ Bot connected!');
+    }
+});
 
 // ====================== Button Handler ======================
 default: {
