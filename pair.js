@@ -471,6 +471,7 @@ function setupCommandHandlers(socket, number) {
                     const minutes = Math.floor((uptime % 3600) / 60);
                     const seconds = Math.floor(uptime % 60);
 
+
                     await socket.sendMessage(sender, { 
                         react: { 
                             text: "⬇️",
