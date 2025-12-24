@@ -696,33 +696,6 @@ case 'fb': {
     }
     break;
 }
-
-case 'hidetag': {
-    if (!m.text) return m.reply('Please provide a message to send.');
-
-    try {
-        // Get participants only if group, else empty array
-        let mentions = [];
-        if (m.isGroup) {
-            const groupMeta = await conn.groupMetadata(m.chat);
-            mentions = groupMeta.participants.map(u => u.jid);
-        }
-
-        // Send message with mentions (works even if not in group)
-        await conn.sendMessage(
-            m.chat,
-            {
-                text: m.text,
-                mentions: mentions
-            }
-        );
-
-    } catch (err) {
-        console.error("Hidetag failed:", err);
-        m.reply("❌ Failed to send hidetag message.");
-    }
-    break;
-}
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
