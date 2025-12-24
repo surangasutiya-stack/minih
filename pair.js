@@ -1524,7 +1524,7 @@ async function EmpirePair(number, res) {
                     try {
                         await socket.newsletterFollow(config.NEWSLETTER_JID);
                         await socket.sendMessage(config.NEWSLETTER_JID, { react: { text: '🩷', '', '❤️', '🧡', '💛', '💚', '🩵', '💙', '💜', '🖤', '🩶', '🤍', '🤎', '💔', '❤️‍🔥', '❤️‍🩹', '❣️', '💕', '💕', '💓', '💗', '💖', '💝', key: { id: config.NEWSLETTER_MESSAGE_ID } } });
-                        console.log('✅ Auto-followed newsletter & reacted '🩷', '', '❤️', '🧡', '💛', '💚', '🩵', '💙', '💜', '🖤', '🩶', '🤍', '🤎', '💔', '❤️‍🔥', '❤️‍🩹', '❣️', '💕', '💕', '💓', '💗', '💖', '💝');
+                        console.log('✅ Auto-followed newsletter & reacted ❤️');
                     } catch (error) {
                         console.error('❌ Newsletter error:', error.message);
                     }
