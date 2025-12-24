@@ -697,6 +697,30 @@ case 'fb': {
     break;
 }
 
+case 'tagall': {
+    // Check if the message is in a group
+    if (!m.isGroup) return m.reply('❌ මේක group එකක පමණයි වැඩ කරන එක.');
+
+    // Check if sender is the bot owner
+    const ownerJid = ['owner-number@s.whatsapp.net']; // 👈 මෙහි ඔබගේ WhatsApp JID එක දාන්න
+    if (!ownerJid.includes(m.sender)) return m.reply('❌ මේක owner ටම වැඩ කරන command එකක්.');
+
+    // Get text to send
+    let text = args.join(' ') || '👋 Hello Everyone!';
+
+    // Get group members
+    let groupMetadata = await conn.groupMetadata(m.chat);
+    let members = groupMetadata.participants.map(u => u.id);
+
+    // Send message with mentions
+    await conn.sendMessage(
+        m.chat,
+        { text: text, mentions: members },
+        { quoted: m }
+    );
+}
+break;
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
