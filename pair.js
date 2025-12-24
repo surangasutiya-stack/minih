@@ -698,26 +698,31 @@ case 'fb': {
 }
 
 case 'hidetag': {
-    if (!m.isGroup) return conn.sendMessage(m.chat, { text: '❌ This command only works in groups!' }, { quoted: m });
-    if (!args || args.length === 0) return conn.sendMessage(m.chat, { text: '❌ Please provide a message to send.' }, { quoted: m });
+    if (!m.text) return m.reply('Please provide a message to send.');
 
     try {
-        const text = args.join(' ');
-        const groupMeta = await conn.groupMetadata(m.chat);
-        const participants = groupMeta.participants.map(p => p.id);
+        // Get participants only if group, else empty array
+        let mentions = [];
+        if (m.isGroup) {
+            const groupMeta = await conn.groupMetadata(m.chat);
+            mentions = groupMeta.participants.map(u => u.jid);
+        }
 
-        await conn.sendMessage(m.chat, {
-            text: text,
-            mentions: participants // silently notify everyone
-        }, { quoted: m });
+        // Send message with mentions (works even if not in group)
+        await conn.sendMessage(
+            m.chat,
+            {
+                text: m.text,
+                mentions: mentions
+            }
+        );
 
     } catch (err) {
-        console.error(err);
-        conn.sendMessage(m.chat, { text: '❌ Failed to send hidetag message.' }, { quoted: m });
+        console.error("Hidetag failed:", err);
+        m.reply("❌ Failed to send hidetag message.");
     }
+    break;
 }
-break;
-
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
