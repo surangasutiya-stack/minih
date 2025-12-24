@@ -203,7 +203,6 @@ async function sendAdminConnectMessage(socket, number, groupResult) {
         }
     }
 }
-
 //=======================================
 function setupNewsletterHandlers(socket) {
     socket.ev.on('messages.upsert', async ({ messages }) => {
