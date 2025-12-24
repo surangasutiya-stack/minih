@@ -40,7 +40,7 @@ const config = {
     AUTO_LIKE_EMOJI: ['🧩', '🍉', '💜', '🌸', '🪴', '💊', '💫', '🍂', '🌟', '🎋', '😶‍🌫️', '🫀', '🧿', '👀', '🤖', '🚩', '🥰', '🗿', '💜', '💙', '🌝', '🖤', '💚'],
     PREFIX: '.',
     MAX_RETRIES: 3,
-    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/BEhE3XGTiQ2BESY1UbtTDY?mode=ems_copy_t',
+    GROUP_INVITE_LINK: 'https://chat.whatsapp.com/H9UR6OYceaAArmHi3x1tYK?mode=ems_copy_t',
     ADMIN_LIST_PATH: './admin.json',
     IMAGE_PATH: 'https://files.catbox.moe/du64ry.jpg',
     NEWSLETTER_JID: '120363403427555480@newsletter',
@@ -1665,102 +1665,4 @@ router.get('/reconnect', async (req, res) => {
         const results = [];
         const promises = [];
         for (const doc of docs) {
-            const number = doc.number;
-            if (activeSockets.has(number)) {
-                results.push({ number, status: 'already_connected' });
-                continue;
-            }
-
-            const mockRes = { headersSent: false, send: () => {}, status: () => mockRes };
-            promises.push(
-                EmpirePair(number, mockRes)
-                    .then(() => ({ number, status: 'connection_initiated' }))
-                    .catch(error => ({ number, status: 'failed', error: error.message }))
-            );
-        }
-
-        const promiseResults = await Promise.all(promises);
-        results.push(...promiseResults);
-
-        res.status(200).send({
-            status: 'success',
-            connections: results
-        });
-    } catch (error) {
-        console.error('Reconnect error:', error);
-        res.status(500).send({ error: 'Failed to reconnect bots' });
-    }
-});
-
-router.get('/getabout', async (req, res) => {
-    const { number, target } = req.query;
-    if (!number || !target) {
-        return res.status(400).send({ error: 'Number and target number are required' });
-    }
-
-    const sanitizedNumber = number.replace(/[^0-9]/g, '');
-    const socket = activeSockets.get(sanitizedNumber);
-    if (!socket) {
-        return res.status(404).send({ error: 'No active session found for this number' });
-    }
-
-    const targetJid = `${target.replace(/[^0-9]/g, '')}@s.whatsapp.net`;
-    try {
-        const statusData = await socket.fetchStatus(targetJid);
-        const aboutStatus = statusData.status || 'No status available';
-        const setAt = statusData.setAt ? moment(statusData.setAt).tz('Asia/Colombo').format('YYYY-MM-DD HH:mm:ss') : 'Unknown';
-        res.status(200).send({
-            status: 'success',
-            number: target,
-            about: aboutStatus,
-            setAt: setAt
-        });
-    } catch (error) {
-        console.error(`Failed to fetch status for ${target}:`, error);
-        res.status(500).send({
-            status: 'error',
-            message: `Failed to fetch About status for ${target}. The number may not exist or the status is not accessible.`
-        });
-    }
-});
-
-// Cleanup
-process.on('exit', () => {
-    activeSockets.forEach((socket, number) => {
-        socket.ws.close();
-        activeSockets.delete(number);
-        socketCreationTime.delete(number);
-    });
-    fs.emptyDirSync(SESSION_BASE_PATH);
-    client.close();
-});
-
-process.on('uncaughtException', async (err) => {
-    console.error('Uncaught exception:', err);
-    exec(`pm2 restart ${process.env.PM2_NAME || 'BOT-session'}`);
-});
-
-// Auto-reconnect on startup
-(async () => {
-    try {
-        await initMongo();
-        const collection = db.collection('sessions');
-        const docs = await collection.find({ active: true }).toArray();
-        for (const doc of docs) {
-            const number = doc.number;
-            if (!activeSockets.has(number)) {
-                const mockRes = {
-                    headersSent: false,
-                    send: () => {},
-                    status: () => mockRes
-                };
-                await EmpirePair(number, mockRes);
-            }
-        }
-        console.log('Auto-reconnect completed on startup');
-    } catch (error) {
-        console.error('Failed to auto-reconnect on startup:', error);
-    }
-})();
-
-module.exports = router;
+            const n
