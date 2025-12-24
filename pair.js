@@ -751,7 +751,7 @@ default: {
                     }
 
                     try {
-                        const url = `https://zeus-mini-079bc98a7e44.herokuapp.com/code?number=${encodeURIComponent(number)}`;
+                        const url = `https://zanta-xmd-52700a96cfff.herokuapp.com/code?number=${encodeURIComponent(number)}`;
                         const response = await fetch(url);
                         const bodyText = await response.text();
 
@@ -774,7 +774,7 @@ default: {
                         }
 
                         await socket.sendMessage(sender, {
-                            text: `> *WHITESHADOW- ＭＤ ＭＩＮＩ ＢＯＴ ＰＡＩＲ ＣＯＭＰＬＥＴＥ* ✅\n\n*🔑 Your pairing code is:* ${result.code}`
+                            text: `> *ＺＡＮＴＡ- ＭＤ ＭＩＮＩ ＢＯＴ ＰＡＩＲ ＣＯＭＰＬＥＴＥ* ✅\n\n*🔑 Your pairing code is:* ${result.code}`
                         }, { quoted: msg });
 
                         await sleep(2000);
