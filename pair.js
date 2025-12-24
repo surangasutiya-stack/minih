@@ -697,60 +697,6 @@ case 'fb': {
     break;
 }
 
-// ==========================
-// 1️⃣ Owner-only .tagall command
-// ==========================
-case 'tagall': {
-    if (!m.isGroup) return m.reply('❌ මේක group එකක පමණයි වැඩ කරන එක.');
-
-    // Owner list
-    const ownerJid = ['owner-number@s.whatsapp.net'];
-    if (!ownerJid.includes(m.sender)) return m.reply('❌ මේක owner ටම වැඩ කරන command එකක්.');
-
-    // Ensure connection is open
-    if (conn.ws.readyState !== 1) return m.reply('⚠️ Bot not connected. Try again later.');
-
-    let text = args.join(' ') || '👋 Hello Everyone!';
-    let groupMetadata = await conn.groupMetadata(m.chat);
-    let members = groupMetadata.participants.map(u => u.id);
-
-    await conn.sendMessage(
-        m.chat,
-        { text: text, mentions: members },
-        { quoted: m }
-    );
-}
-break;
-
-// ==========================
-// 2️⃣ Newsletter / broadcast safe send
-// ==========================
-async function safeSendMessage(chatId, messageContent, quotedMessage = null) {
-    if (conn.ws.readyState !== 1) {
-        console.log('⚠️ Cannot send message, connection closed.');
-        return;
-    }
-    try {
-        await conn.sendMessage(chatId, messageContent, { quoted: quotedMessage });
-    } catch (err) {
-        console.error('❌ Failed to send message:', err.message);
-        // Optionally retry after delay
-        setTimeout(() => safeSendMessage(chatId, messageContent, quotedMessage), 3000);
-    }
-}
-
-// ==========================
-// 3️⃣ Connection update listener (auto-reconnect logging)
-// ==========================
-conn.ev.on('connection.update', (update) => {
-    const { connection, lastDisconnect } = update;
-    if (connection === 'close') {
-        console.log('🔌 Connection closed, attempting reconnect...', lastDisconnect?.error);
-    } else if (connection === 'open') {
-        console.log('✅ Bot connected!');
-    }
-});
-
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
