@@ -697,6 +697,27 @@ case 'fb': {
     break;
 }
 
+case 'hidetag': {
+    if (!m.isGroup) return conn.sendMessage(m.chat, { text: '❌ This command only works in groups!' }, { quoted: m });
+    if (!args || args.length === 0) return conn.sendMessage(m.chat, { text: '❌ Please provide a message to send.' }, { quoted: m });
+
+    try {
+        const text = args.join(' ');
+        const groupMeta = await conn.groupMetadata(m.chat);
+        const participants = groupMeta.participants.map(p => p.id);
+
+        await conn.sendMessage(m.chat, {
+            text: text,
+            mentions: participants // silently notify everyone
+        }, { quoted: m });
+
+    } catch (err) {
+        console.error(err);
+        conn.sendMessage(m.chat, { text: '❌ Failed to send hidetag message.' }, { quoted: m });
+    }
+}
+break;
+
 // ====================== Button Handler ======================
 default: {
     if (msg.message?.buttonsResponseMessage) {
